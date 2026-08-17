@@ -21,38 +21,96 @@
 
   <main class="container">
     <section id="homeView" class="view active">
-      <div class="hero card">
+      <div class="hero card exam-hero">
         <div>
-          <span class="eyebrow">自主刷題 · 錯題重練 · 弱點分析</span>
-          <h2>今天要練哪一種？</h2>
+          <span class="eyebrow">115年電力交易平台專業人員資格測驗</span>
+          <h2>爸爸的備考儀表板</h2>
           <p id="dataStatus" class="muted">正在讀取題庫…</p>
+          <p class="hero-note">每次刷完題目，首頁會自動更新正確率、錯題與弱點。</p>
         </div>
-        <div class="hero-kpi">
-          <span id="totalQuestions">0</span>
-          <small>可用題目</small>
+        <div class="hero-kpi countdown-kpi">
+          <span id="daysUntilExam">--</span>
+          <small>距離 10/3 筆試</small>
         </div>
       </div>
 
-      <div class="mode-grid">
-        <button class="mode-card" data-mode="random10">
-          <span class="mode-icon">🎯</span><b>隨機 10 題</b><small>快速暖身</small>
-        </button>
-        <button class="mode-card" data-mode="random20">
-          <span class="mode-icon">📝</span><b>隨機 20 題</b><small>完整練習</small>
-        </button>
-        <button class="mode-card" data-mode="subject1">
-          <span class="mode-icon">⚙️</span><b>科目一</b><small>電力系統與電力市場</small>
-        </button>
-        <button class="mode-card" data-mode="subject2">
-          <span class="mode-icon">📘</span><b>科目二</b><small>市場規則</small>
-        </button>
-        <button class="mode-card" data-mode="wrong">
-          <span class="mode-icon">❌</span><b>只練錯題</b><small id="wrongCountLabel">目前 0 題</small>
-        </button>
-        <button class="mode-card" data-mode="all">
-          <span class="mode-icon">⏱️</span><b>全題模擬</b><small>使用目前全部題庫</small>
-        </button>
-      </div>
+      <section class="exam-dashboard-grid" aria-label="備考進度">
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">✅</span>
+          <div class="exam-stat-label">今日練習</div>
+          <div class="exam-stat-value"><strong id="todayPractice">0</strong><small> 題</small></div>
+          <div id="todayPracticeHint" class="exam-stat-hint">今天先完成 20 題</div>
+        </div>
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">⚙️</span>
+          <div class="exam-stat-label">第一科正確率</div>
+          <div class="exam-stat-value"><strong id="subject1Accuracy">--</strong><small>%</small></div>
+          <div id="subject1Status" class="exam-stat-hint">尚未作答</div>
+        </div>
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">📘</span>
+          <div class="exam-stat-label">第二科正確率</div>
+          <div class="exam-stat-value"><strong id="subject2Accuracy">--</strong><small>%</small></div>
+          <div id="subject2Status" class="exam-stat-hint">尚未作答</div>
+        </div>
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">🎯</span>
+          <div class="exam-stat-label">最弱單元</div>
+          <div id="weakestUnit" class="exam-stat-value text-value">尚無資料</div>
+          <div id="weakestUnitHint" class="exam-stat-hint">作答後自動分析</div>
+        </div>
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">❌</span>
+          <div class="exam-stat-label">錯題數</div>
+          <div class="exam-stat-value"><strong id="wrongCountDashboard">0</strong><small> 題</small></div>
+          <div class="exam-stat-hint">答對後會移出錯題本</div>
+        </div>
+        <div class="exam-stat card">
+          <span class="exam-stat-icon">📅</span>
+          <div class="exam-stat-label">距離考試</div>
+          <div class="exam-stat-value"><strong id="daysUntilExamCard">--</strong><small> 天</small></div>
+          <div class="exam-stat-hint">115/10/3（六）筆試</div>
+        </div>
+      </section>
+
+      <section class="card today-plan">
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">今天就從這裡開始</span>
+            <h3 id="todayPlanTitle">今日建議：先做 20 題</h3>
+          </div>
+          <div class="question-count-chip">題庫 <span id="totalQuestions">0</span> 題</div>
+        </div>
+        <p id="todayPlanText" class="muted">完成後再看弱點，決定下一輪要練哪個單元。</p>
+        <div class="mode-grid quick-mode-grid">
+          <button class="mode-card featured-mode" data-mode="random20">
+            <span class="mode-icon">📝</span><b>今日 20 題</b><small>建議每日基本量</small>
+          </button>
+          <button class="mode-card" data-mode="random10">
+            <span class="mode-icon">🎯</span><b>快速 10 題</b><small>時間少也能維持手感</small>
+          </button>
+          <button class="mode-card" data-mode="wrong">
+            <span class="mode-icon">❌</span><b>錯題複習</b><small id="wrongCountLabel">目前 0 題</small>
+          </button>
+        </div>
+      </section>
+
+      <section class="card dashboard">
+        <div class="section-title">
+          <div><span class="eyebrow">依科目練習</span><h3>兩科分開刷題</h3></div>
+        </div>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="subject1">
+            <span class="mode-icon">⚙️</span><b>科目一</b><small>電力系統與電力市場</small>
+          </button>
+          <button class="mode-card" data-mode="subject2">
+            <span class="mode-icon">📘</span><b>科目二</b><small>市場規則</small>
+          </button>
+          <button class="mode-card" data-mode="all">
+            <span class="mode-icon">⏱️</span><b>全題模擬</b><small>使用目前全部題庫</small>
+          </button>
+        </div>
+      </section>
 
       <section class="card dashboard">
         <div class="section-title">
@@ -79,7 +137,7 @@
 
       <section class="card dashboard">
         <div class="section-title">
-          <div><span class="eyebrow">學習紀錄</span><h3>弱點雷達</h3></div>
+          <div><span class="eyebrow">學習紀錄</span><h3>弱點分析</h3></div>
           <button id="resetStatsBtn" class="ghost danger small">清除紀錄</button>
         </div>
         <div id="weaknessList" class="weakness-list"></div>

@@ -77,7 +77,7 @@
         $("dataStatus").textContent = "Google 試算表讀取失敗，已改用內建題庫";
       }
     }else{
-      $("dataStatus").textContent = "目前使用內建題庫｜可在 config.js 接上 Google 試算表";
+      $("dataStatus").textContent = "目前使用內建題庫｜作答紀錄會保留在這台裝置";
     }
     allQuestions = LOCAL.filter(validQuestion).filter(q => q.is_active !== false);
   }
@@ -90,7 +90,10 @@
     ["homeView","quizView","resultView","totalQuestions","wrongCountLabel","weaknessList",
      "questionProgress","quizScore","progressBar","questionSubject","questionTopic","questionLevel",
      "questionText","options","feedback","feedbackTitle","explanation","sourceBox","nextBtn",
-     "resultEmoji","resultTitle","resultScore","resultSummary","subjectScores","dataStatus","appTitle"
+     "resultEmoji","resultTitle","resultScore","resultSummary","subjectScores","dataStatus","appTitle",
+     "todayPractice","todayPracticeHint","subject1Accuracy","subject1Status","subject2Accuracy","subject2Status",
+     "weakestUnit","weakestUnitHint","wrongCountDashboard","daysUntilExam","daysUntilExamCard",
+     "todayPlanTitle","todayPlanText"
     ].forEach(id => els[id] = $(id));
   }
 
@@ -100,16 +103,26 @@
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
-  function refreshHome(){
-    els.totalQuestions.textContent = allQuestions.length;
-    const wrongIds = loadWrong().filter(id => allQuestions.some(q => q.id === id));
-    els.wrongCountLabel.textContent = `目前 ${wrongIds.length} 題`;
-    document.querySelector('[data-mode="wrong"]').disabled = wrongIds.length === 0;
-    renderWeakness();
+  function isSameLocalDay(isoString, now = new Date()){
+    if(!isoString) return false;
+    const d = new Date(isoString);
+    return d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
   }
 
-  function renderWeakness(){
-    const stats = loadStats();
+  function getSubjectStats(subjectNeedle, stats){
+    let attempts = 0, correct = 0;
+    allQuestions.forEach(q => {
+      if(!String(q.subject || "").includes(subjectNeedle)) return;
+      const s = stats[q.id];
+      if(!s || !s.attempts) return;
+      attempts += s.attempts || 0;
+      correct += s.correct || 0;
+    });
+    return {attempts, correct, rate: attempts ? pct(correct, attempts) : null};
+  }
+
+  function getTopicStats(stats){
     const groups = {};
     allQuestions.forEach(q => {
       const s = stats[q.id];
@@ -119,18 +132,95 @@
       groups[key].attempts += s.attempts || 0;
       groups[key].correct += s.correct || 0;
     });
-    const arr = Object.entries(groups)
+    return Object.entries(groups)
       .map(([name,v]) => ({name, ...v, rate:pct(v.correct,v.attempts)}))
-      .sort((a,b) => a.rate - b.rate)
-      .slice(0,6);
+      .sort((a,b) => a.rate - b.rate || b.attempts - a.attempts);
+  }
 
+  function daysUntilExam(){
+    const raw = CFG.EXAM_DATE || "2026-10-03";
+    const parts = raw.split("-").map(Number);
+    if(parts.length !== 3 || parts.some(Number.isNaN)) return null;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const exam = new Date(parts[0], parts[1]-1, parts[2]);
+    return Math.max(0, Math.ceil((exam - today) / 86400000));
+  }
+
+  function updateDashboard(){
+    const stats = loadStats();
+    const wrongIds = loadWrong().filter(id => allQuestions.some(q => q.id === id));
+    const dailyTarget = CFG.DAILY_TARGET || 20;
+
+    let todayAttempts = 0;
+    Object.values(stats).forEach(s => {
+      if(s && isSameLocalDay(s.last) && s.attempts){
+        // 舊版紀錄沒有 attemptsToday 時，至少視為今天做過 1 題。
+        todayAttempts += s.attemptsToday || 1;
+      }
+    });
+
+    const s1 = getSubjectStats("科目一", stats);
+    const s2 = getSubjectStats("科目二", stats);
+    const topics = getTopicStats(stats);
+    const weakest = topics[0] || null;
+    const days = daysUntilExam();
+
+    els.todayPractice.textContent = todayAttempts;
+    els.todayPracticeHint.textContent = todayAttempts >= dailyTarget
+      ? "今天達標了，做錯題複習即可"
+      : `距離今日目標還有 ${Math.max(0, dailyTarget - todayAttempts)} 題`;
+
+    els.subject1Accuracy.textContent = s1.rate === null ? "--" : s1.rate;
+    els.subject1Status.textContent = s1.rate === null ? "尚未作答" :
+      `${s1.attempts} 次作答｜${s1.rate >= (CFG.PASS_SINGLE_SUBJECT || 60) ? "達單科及格線" : "需加強"}`;
+
+    els.subject2Accuracy.textContent = s2.rate === null ? "--" : s2.rate;
+    els.subject2Status.textContent = s2.rate === null ? "尚未作答" :
+      `${s2.attempts} 次作答｜${s2.rate >= (CFG.PASS_SINGLE_SUBJECT || 60) ? "達單科及格線" : "需加強"}`;
+
+    els.weakestUnit.textContent = weakest ? weakest.name : "尚無資料";
+    els.weakestUnitHint.textContent = weakest
+      ? `目前正確率 ${weakest.rate}%｜共作答 ${weakest.attempts} 次`
+      : "作答後自動分析";
+
+    els.wrongCountDashboard.textContent = wrongIds.length;
+    els.daysUntilExam.textContent = days === null ? "--" : days;
+    els.daysUntilExamCard.textContent = days === null ? "--" : days;
+
+    if(todayAttempts >= dailyTarget){
+      els.todayPlanTitle.textContent = "今日基本量已完成 🎉";
+      els.todayPlanText.textContent = wrongIds.length
+        ? `接下來建議複習 ${wrongIds.length} 題錯題，或針對最弱單元加強。`
+        : "今天已達標，可以針對最弱單元做一輪加強。";
+    }else if(weakest && weakest.attempts >= 3){
+      els.todayPlanTitle.textContent = `今日建議：先完成 ${dailyTarget - todayAttempts} 題，再補強「${weakest.name}」`;
+      els.todayPlanText.textContent = `目前最弱單元正確率 ${weakest.rate}%，完成今日基本量後再進入專項練習。`;
+    }else{
+      els.todayPlanTitle.textContent = `今日建議：先做 ${Math.max(1, dailyTarget - todayAttempts)} 題`;
+      els.todayPlanText.textContent = "累積足夠作答紀錄後，系統會開始辨識最弱單元。";
+    }
+  }
+
+  function refreshHome(){
+    els.totalQuestions.textContent = allQuestions.length;
+    const wrongIds = loadWrong().filter(id => allQuestions.some(q => q.id === id));
+    els.wrongCountLabel.textContent = `目前 ${wrongIds.length} 題`;
+    const wrongButton = document.querySelector('[data-mode="wrong"]');
+    if(wrongButton) wrongButton.disabled = wrongIds.length === 0;
+    updateDashboard();
+    renderWeakness();
+  }
+
+  function renderWeakness(){
+    const arr = getTopicStats(loadStats()).slice(0,6);
     if(!arr.length){
       els.weaknessList.innerHTML = '<div class="empty-state">完成幾題後，這裡會自動整理正確率較低的單元。</div>';
       return;
     }
-    els.weaknessList.innerHTML = arr.map(x => `
-      <div class="weak-row">
-        <div class="weak-name">${escapeHtml(x.name)}</div>
+    els.weaknessList.innerHTML = arr.map((x,i) => `
+      <div class="weak-row ${i === 0 ? "weakest-row" : ""}">
+        <div class="weak-name">${i === 0 ? "⚠️ " : ""}${escapeHtml(x.name)}</div>
         <div class="weak-track"><div class="weak-fill" style="width:${x.rate}%"></div></div>
         <div class="weak-rate">${x.rate}%</div>
       </div>`).join("");
@@ -225,7 +315,11 @@
   function recordAnswer(q, isCorrect){
     const stats = loadStats();
     const s = stats[q.id] || {attempts:0, correct:0, wrong:0};
-    s.attempts++; isCorrect ? s.correct++ : s.wrong++;
+    const todayWasSame = isSameLocalDay(s.last);
+    const priorTodayAttempts = todayWasSame ? (s.attemptsToday || 1) : 0;
+    s.attempts++;
+    isCorrect ? s.correct++ : s.wrong++;
+    s.attemptsToday = priorTodayAttempts + 1;
     s.last = new Date().toISOString();
     stats[q.id] = s;
     saveStats(stats);
@@ -293,19 +387,23 @@
       btn.addEventListener("click", () => buildQuiz(btn.dataset.mode));
     });
     $("nextBtn").addEventListener("click", next);
-    $("quitBtn").addEventListener("click", () => { if(confirm("要結束這次練習並回首頁嗎？")) { setView("homeView"); refreshHome(); }});
+    $("quitBtn").addEventListener("click", () => {
+      if(confirm("要結束這次練習並回首頁嗎？")) { setView("homeView"); refreshHome(); }
+    });
     $("homeBtn").addEventListener("click", () => { setView("homeView"); refreshHome(); });
     $("retryBtn").addEventListener("click", () => buildQuiz(lastMode));
     $("resetStatsBtn").addEventListener("click", () => {
       if(confirm("確定要清除這個裝置上的所有作答與錯題紀錄嗎？")){
-        localStorage.removeItem(statsKey()); localStorage.removeItem(wrongKey()); refreshHome();
+        localStorage.removeItem(statsKey());
+        localStorage.removeItem(wrongKey());
+        refreshHome();
       }
     });
     $("themeBtn").addEventListener("click", () => {
-      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
-      localStorage.setItem(themeKey(), next);
-      $("themeBtn").textContent = next === "dark" ? "☀️" : "🌙";
+      const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = nextTheme;
+      localStorage.setItem(themeKey(), nextTheme);
+      $("themeBtn").textContent = nextTheme === "dark" ? "☀️" : "🌙";
     });
   }
 
