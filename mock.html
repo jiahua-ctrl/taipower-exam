@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b5f63">
+  <title>115年正式模擬考｜電力交易平台資格測驗</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .mock-shell{max-width:920px;margin:0 auto;padding:24px 16px 80px}.mock-top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:18px}.mock-top a{text-decoration:none}.mock-card{background:var(--card,#fff);border:1px solid var(--border,#dfe7e7);border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 8px 30px rgba(0,0,0,.04)}.mock-hero h1{margin:.2rem 0 .6rem}.mock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mock-kpi{padding:16px;border-radius:14px;background:rgba(11,95,99,.07)}.mock-kpi b{display:block;font-size:1.35rem;margin-bottom:4px}.mock-note{font-size:.92rem;line-height:1.7}.mock-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.mock-actions button,.mock-actions a{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none}.mock-primary{background:#0b5f63;color:#fff}.mock-secondary{background:#edf4f4;color:#234}.mock-sticky{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid #dfe7e7;padding:10px 0;margin-bottom:10px}.mock-sticky-inner{max-width:920px;margin:auto;padding:0 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}.mock-timer{font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums}.mock-question{scroll-margin-top:90px}.mock-question h3{line-height:1.6;font-size:1.05rem}.mock-option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #dfe7e7;border-radius:12px;margin:8px 0;cursor:pointer}.mock-option:has(input:checked){border-color:#0b5f63;background:rgba(11,95,99,.07)}.mock-option input{margin-top:4px}.mock-meta{font-size:.84rem;opacity:.7;margin-bottom:8px}.mock-warn{color:#a64b00;font-weight:700}.mock-score{font-size:2rem;font-weight:900}.pass{color:#14804a}.fail{color:#b42318}.review-item{border-top:1px solid #e2e8e8;padding:16px 0}.review-item:first-child{border-top:0}.answer-chip{display:inline-block;padding:3px 8px;border-radius:999px;background:#eef3f3;margin-right:6px;font-size:.86rem}.hidden{display:none!important}@media(max-width:640px){.mock-grid{grid-template-columns:1fr}.mock-top{align-items:flex-start;flex-direction:column}.mock-sticky-inner{align-items:flex-start;flex-direction:column}.mock-card{padding:17px}}
+  </style>
+</head>
+<body>
+  <div id="introView" class="mock-shell">
+    <div class="mock-top"><a href="index.html">← 回刷題首頁</a><span>115年備考用｜非官方考古題</span></div>
+    <section class="mock-card mock-hero">
+      <span class="eyebrow">正式模式</span>
+      <h1>⚡ 兩科限時模擬考</h1>
+      <p>不逐題顯示答案；完成第一科後進入第二科，最後才一次公布成績、通過判定、弱點與錯題解析。</p>
+      <div class="mock-grid">
+        <div class="mock-kpi"><b>科目一｜60 分鐘</b><span>電力系統與電力市場｜本站抽 <strong id="s1Count">30</strong> 題</span></div>
+        <div class="mock-kpi"><b>科目二｜90 分鐘</b><span>電力交易平台市場規則｜本站抽 <strong id="s2Count">45</strong> 題</span></div>
+      </div>
+      <p class="mock-note">及格判定：兩科各以100分換算，兩科平均達70分，且任一科不得低於60分。本頁的題數為本站為了練習所做的模擬配置，不代表官方公布的實際題數。</p>
+      <div class="mock-actions"><button id="startMockBtn" class="mock-primary">開始第一科</button><a class="mock-secondary" href="index.html">先回去練習</a></div>
+    </section>
+  </div>
+
+  <div id="examView" class="hidden">
+    <div class="mock-sticky"><div class="mock-sticky-inner"><div><b id="subjectTitle">科目一</b><div id="answerProgress">已作答 0 / 0</div></div><div><span>剩餘時間</span> <span id="timer" class="mock-timer">60:00</span></div></div></div>
+    <main class="mock-shell" style="padding-top:0"><div id="questionList"></div><section class="mock-card"><div id="unansweredHint" class="mock-warn"></div><div class="mock-actions"><button id="submitSubjectBtn" class="mock-primary">交卷</button></div></section></main>
+  </div>
+
+  <div id="breakView" class="mock-shell hidden">
+    <div class="mock-top"><a href="index.html">← 回刷題首頁</a></div>
+    <section class="mock-card mock-hero"><span class="eyebrow">第一科已交卷</span><h1>先不公布分數</h1><p>為了接近正式測驗，第一科成績會等兩科全部完成後才一起顯示。練習版不強制等待，可直接開始第二科。</p><div class="mock-actions"><button id="startS2Btn" class="mock-primary">開始第二科｜90分鐘</button></div></section>
+  </div>
+
+  <div id="resultView" class="mock-shell hidden">
+    <div class="mock-top"><a href="index.html">← 回刷題首頁</a><a href="mock.html">再抽一份模擬考</a></div>
+    <section class="mock-card mock-hero"><span class="eyebrow">兩科作答完成</span><h1 id="passTitle">模擬結果</h1><div class="mock-grid"><div class="mock-kpi"><b>第一科 <span id="s1Score" class="mock-score">0</span></b><span id="s1Pass"></span></div><div class="mock-kpi"><b>第二科 <span id="s2Score" class="mock-score">0</span></b><span id="s2Pass"></span></div></div><p>兩科平均：<strong id="avgScore" class="mock-score">0</strong></p><p id="resultRule" class="mock-note"></p></section>
+    <section class="mock-card"><span class="eyebrow">本次弱點</span><h2>最需要再練的單元</h2><div id="weakTopics"></div></section>
+    <section class="mock-card"><span class="eyebrow">錯題解析</span><h2>本次答錯／未作答</h2><div id="reviewList"></div></section>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="questions.js"></script>
+  <script src="questions_extra.js"></script>
+  <script src="questions_unit1_dad.js"></script><script src="questions_unit2_dad.js"></script><script src="questions_unit3_dad.js"></script><script src="questions_unit4_dad.js"></script><script src="questions_unit5_dad.js"></script><script src="questions_unit6_dad.js"></script><script src="questions_unit7_dad.js"></script><script src="questions_unit8_dad.js"></script><script src="questions_unit9_dad.js"></script><script src="questions_unit10_dad.js"></script>
+  <script src="questions_confusion_v3.js"></script>
+  <script src="mock.js"></script>
+</body>
+</html>
