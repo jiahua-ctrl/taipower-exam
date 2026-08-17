@@ -19,8 +19,9 @@ window.QUIZ_CONFIG = {
   MOCK_SUBJECT2_COUNT: 45
 };
 
-// 載入備考教練與間隔複習。
+// 載入入口首頁、備考教練與間隔複習。
 if (document.readyState === "loading") {
+  document.write('<script src="portal.js?v=20260818"><\/script>');
   document.write('<script src="coach.js?v=20260817"><\/script>');
   document.write('<script src="spaced_review.js?v=20260817"><\/script>');
 }
