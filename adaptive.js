@@ -1,3 +1,14 @@
+[
+  "questions_unit4_advanced_v2.js",
+  "questions_unit6_advanced_v2.js",
+  "questions_unit7_advanced_v2a.js",
+  "questions_unit7_advanced_v2b.js",
+  "questions_unit7_advanced_v2c.js",
+  "questions_unit8_advanced_v2a.js",
+  "questions_unit8_advanced_v2b.js",
+  "questions_unit8_advanced_v2c.js"
+].forEach(src => document.write('<script src="' + src + '"><\/script>'));
+
 (() => {
   const CFG = window.QUIZ_CONFIG || {};
   const RECOMMEND_PARAM = "recommended";
@@ -53,10 +64,8 @@
       }
     }
 
-    // 約 40%：目前仍在錯題本的題目。
     add(questions.filter(q => wrongIds.includes(q.id)), Math.ceil(target * 0.40));
 
-    // 約 45%：正確率最低的前兩個單元。
     if(weakTopics[0]){
       add(questions.filter(q => (q.topic || "其他") === weakTopics[0].name), Math.ceil(target * 0.30));
     }
@@ -64,15 +73,12 @@
       add(questions.filter(q => (q.topic || "其他") === weakTopics[1].name), Math.ceil(target * 0.15));
     }
 
-    // 其餘優先補尚未做過或做得最少的題目，避免只背熟同一批題。
     const lowExposure = [...questions].sort((a,b) => {
       const aa = stats[a.id]?.attempts || 0;
       const bb = stats[b.id]?.attempts || 0;
       return aa - bb || Math.random() - 0.5;
     });
     add(lowExposure, target - picked.length);
-
-    // 保險：若前述條件不足，從全題庫補足。
     add(questions, target - picked.length);
     return shuffle(picked).slice(0, target);
   }
@@ -109,8 +115,6 @@
     if(attempt < 50) setTimeout(() => startRecommendedWhenReady(attempt + 1), 60);
   }
 
-  // 這支檔案放在所有 questions*.js 之後、app.js 之前。
-  // 因此若是推薦題組模式，可以在 app.js 擷取 LOCAL_QUESTIONS 前先篩成指定 20 題。
   if(isRecommendedRun){
     let ids = [];
     try { ids = JSON.parse(sessionStorage.getItem(RECOMMEND_SESSION_KEY)) || []; }
@@ -123,7 +127,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    // app.js 會在稍後的 DOMContentLoaded handler 完成初始化；用 timer 等它綁定完成。
     setTimeout(() => {
       if(isRecommendedRun){
         startRecommendedWhenReady();
@@ -143,7 +146,6 @@
         return;
       }
 
-      // 若未來改成 Google Sheet 遠端題庫，推薦器需一起改成讀遠端資料；目前先避免誤配。
       if(String(CFG.GOOGLE_SHEET_CSV_URL || "").trim()) return;
 
       const grid = document.querySelector(".quick-mode-grid");
