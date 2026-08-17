@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b5f63">
+  <title>今日到期複習｜台電資格測驗</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .review-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+    .review-summary{padding:22px;margin-bottom:18px}.review-summary h2{margin:5px 0 8px}.memory-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:15px}.memory-mini{padding:11px;border:1px solid var(--line);border-radius:12px;text-align:center}.memory-mini b{display:block;font-size:22px;color:var(--brand)}
+    .review-empty{padding:36px;text-align:center}.review-empty .big{font-size:48px}.next-review-note{margin-top:12px;padding:11px 13px;border-radius:11px;background:var(--soft);font-size:13px;font-weight:700;line-height:1.55}
+    @media(max-width:520px){.memory-strip{grid-template-columns:repeat(2,1fr)}.review-top{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><div class="brand-mark">🧠</div><div><h1>今日到期複習</h1><p>答對後自動延長複習間隔</p></div></div><a class="ghost small" href="index.html" style="text-decoration:none">回首頁</a></header>
+  <main class="container">
+    <section id="reviewHome">
+      <div class="card review-summary">
+        <span class="eyebrow">Spaced Review</span><h2>今天最值得重新想一次的題目</h2>
+        <p id="reviewIntro" class="muted">正在整理記憶排程…</p>
+        <div class="memory-strip"><div class="memory-mini">🟢<b id="mGreen">0</b><small>已掌握</small></div><div class="memory-mini">🟡<b id="mYellow">0</b><small>待複習</small></div><div class="memory-mini">🔴<b id="mRed">0</b><small>容易忘</small></div><div class="memory-mini">🆕<b id="mNew">0</b><small>未練習</small></div></div>
+      </div>
+      <div id="reviewEmpty" class="card review-empty hidden"><div class="big">✅</div><h2>目前沒有到期題目</h2><p id="nextDueText" class="muted"></p><a class="primary" href="index.html" style="display:inline-block;text-decoration:none;margin-top:10px">回首頁繼續學習</a></div>
+    </section>
+
+    <section id="reviewQuiz" class="view">
+      <div class="quiz-head"><a class="ghost small" href="index.html" style="text-decoration:none">← 返回</a><div class="progress-wrap"><div class="progress-meta"><span id="reviewProgress">1 / 10</span><span id="reviewScore">答對 0</span></div><div class="progress"><div id="reviewProgressBar"></div></div></div></div>
+      <article class="question-card card"><div class="question-meta"><span id="reviewSubject" class="pill"></span><span id="reviewTopic" class="pill subtle"></span><span id="reviewMemory" class="pill subtle"></span></div><h2 id="reviewQuestion"></h2><div id="reviewOptions" class="options"></div><div id="reviewFeedback" class="feedback hidden"><div id="reviewFeedbackTitle" class="feedback-title"></div><p id="reviewExplanation"></p><div id="reviewNext" class="next-review-note"></div><div id="reviewSource" class="source-box"></div></div><button id="reviewNextBtn" class="primary hidden">下一題 →</button></article>
+    </section>
+
+    <section id="reviewResult" class="view"><section class="result-card card"><div class="result-emoji">🧠</div><span class="eyebrow">今日到期複習完成</span><h2 id="reviewResultTitle">完成！</h2><div class="score-big"><span id="reviewResultScore">0</span><small>%</small></div><p id="reviewResultText" class="muted"></p><div class="result-actions"><a href="index.html" class="primary" style="text-decoration:none">回首頁看記憶狀態</a></div></section></section>
+  </main>
+
+  <script src="questions.js"></script><script src="questions_extra.js"></script>
+  <script src="questions_unit1_dad.js"></script><script src="questions_unit2_dad.js"></script><script src="questions_unit3_dad.js"></script><script src="questions_unit4_dad.js"></script><script src="questions_unit5_dad.js"></script><script src="questions_unit6_dad.js"></script><script src="questions_unit7_dad.js"></script><script src="questions_unit8_dad.js"></script><script src="questions_unit9_dad.js"></script><script src="questions_unit10_dad.js"></script>
+  <script src="questions_unit4_advanced_v2.js"></script><script src="questions_unit6_advanced_v2.js"></script><script src="questions_unit7_advanced_v2a.js"></script><script src="questions_unit7_advanced_v2b.js"></script><script src="questions_unit7_advanced_v2c.js"></script><script src="questions_unit8_advanced_v2a.js"></script><script src="questions_unit8_advanced_v2b.js"></script><script src="questions_unit8_advanced_v2c.js"></script>
+  <script src="review.js"></script>
+</body>
+</html>
