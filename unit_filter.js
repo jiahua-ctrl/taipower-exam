@@ -5,6 +5,7 @@ document.write('<script src="questions_verified_core_v1.js"><\/script>');
 document.write('<script src="questions_confusion_v3.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v1.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v2.js"><\/script>');
+document.write('<script src="questions_verified_high_discrimination_v3.js"><\/script>');
 
 (() => {
   const params = new URLSearchParams(window.location.search);
