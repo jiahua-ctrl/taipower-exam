@@ -22,6 +22,8 @@ window.QUIZ_CONFIG = {
 };
 
 // 載入「備考教練」：今日任務、連續答對、成就徽章、進步提示與動態鼓勵。
+// 載入「間隔複習」：今日到期題、記憶熟練度與下次複習日期。
 if (document.readyState === "loading") {
   document.write('<script src="coach.js?v=20260817"><\/script>');
+  document.write('<script src="spaced_review.js?v=20260817"><\/script>');
 }
