@@ -164,6 +164,7 @@ def add_unit_heading(doc, unit, subject, first=False):
 def add_question(doc, num, q):
     p = add_para(doc, size=14, before=3, after=5, line_spacing=1.0)
     p.paragraph_format.tab_stops.add_tab_stop(Cm(0.65))
+    p.paragraph_format.keep_together = True
 
     rq = p.add_run(f"{num}. {q['question']}")
     set_run_font(rq, size=14, bold=True)
@@ -181,6 +182,7 @@ def compact_source(q):
 
 def add_answer(doc, num, q):
     p = add_para(doc, size=14, before=3, after=5, line_spacing=1.0)
+    p.paragraph_format.keep_together = True
     r1 = p.add_run(f"{num}. 答案：{str(q['answer']).upper()}")
     set_run_font(r1, size=14, bold=True)
     r2 = p.add_run(f"\n解析：{q['explanation']}")
