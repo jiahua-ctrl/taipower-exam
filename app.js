@@ -144,6 +144,11 @@
     if(mode === "random20") quiz = shuffle(active).slice(0, Math.min(20, active.length));
     if(mode === "subject1") quiz = shuffle(active.filter(q => String(q.subject).includes("科目一")));
     if(mode === "subject2") quiz = shuffle(active.filter(q => String(q.subject).includes("科目二")));
+    if(mode === "calc") quiz = shuffle(active.filter(q => String(q.tags || "").includes("計算")));
+    if(mode === "unit4") quiz = shuffle(active.filter(q => String(q.tags || "").includes("單元04")));
+    if(mode === "unit6") quiz = shuffle(active.filter(q => String(q.tags || "").includes("單元06")));
+    if(mode === "unit7") quiz = shuffle(active.filter(q => String(q.tags || "").includes("單元07")));
+    if(mode === "unit8") quiz = shuffle(active.filter(q => String(q.tags || "").includes("單元08")));
     if(mode === "wrong") quiz = shuffle(active.filter(q => wrongIds.includes(q.id)));
     if(mode === "all") quiz = shuffle(active);
 
@@ -227,7 +232,6 @@
 
     let wrong = loadWrong();
     if(isCorrect){
-      // 答對後將該題移出「錯題本」，形成可逐步清空的重練機制。
       wrong = wrong.filter(id => id !== q.id);
     }else if(!wrong.includes(q.id)){
       wrong.push(q.id);
