@@ -1,8 +1,9 @@
 // 嚴格核對模式：舊題檔即使仍存在 repo，也不進入爸爸正式刷題池。
-// 目前只載入已能對到台電官方教材依據的核心題＋已核對易混淆題。
+// 只載入已能對到台電官方教材依據的核心題、易混淆題與高鑑別題。
 window.LOCAL_QUESTIONS = [];
 document.write('<script src="questions_verified_core_v1.js"><\/script>');
 document.write('<script src="questions_confusion_v3.js"><\/script>');
+document.write('<script src="questions_verified_high_discrimination_v1.js"><\/script>');
 
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -19,7 +20,7 @@ document.write('<script src="questions_confusion_v3.js"><\/script>');
 
   function applyFilters(){
     if(!Array.isArray(window.LOCAL_QUESTIONS)) return;
-    let qs = window.LOCAL_QUESTIONS;
+    let qs = window.LOCAL_QUESTIONS.filter(q => String(q.tags || "").includes("已核對"));
     if(isUnitRun){
       const tag = `單元${selectedUnit}`;
       qs = qs.filter(q => String(q.tags || "").includes(tag));
