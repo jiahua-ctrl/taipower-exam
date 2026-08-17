@@ -5,7 +5,6 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from docx import Document
-from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -39,17 +38,33 @@ UNIT_NAMES = {
     "10": "我國電力交易市場推動之方向與展望",
 }
 
+TARGET_COUNTS = {
+    "01": 20, "02": 25, "03": 25, "04": 25, "05": 35,
+    "06": 35, "07": 40, "08": 40, "09": 35, "10": 20,
+}
+
 
 def load_questions():
+    """Extract the JSON array passed into .concat(...) from each JS question file."""
     questions = []
     for filename in QUESTION_FILES:
         path = ROOT / filename
         if not path.exists():
             raise FileNotFoundError(path)
-        for raw in path.read_text(encoding="utf-8").splitlines():
-            line = raw.strip().rstrip(",")
-            if line.startswith("{") and line.endswith("}"):
-                questions.append(json.loads(line))
+        text = path.read_text(encoding="utf-8")
+        start = text.find("[")
+        end = text.rfind("]")
+        if start < 0 or end <= start:
+            raise RuntimeError(f"無法解析題庫陣列: {filename}")
+        arr = json.loads(text[start:end + 1])
+        if not isinstance(arr, list):
+            raise RuntimeError(f"題庫格式不是陣列: {filename}")
+        for q in arr:
+            if not isinstance(q, dict):
+                raise RuntimeError(f"題目格式不是物件: {filename}")
+            q = dict(q)
+            q["_source_file"] = filename
+            questions.append(q)
     return questions
 
 
@@ -66,13 +81,28 @@ def numeric_id(q):
     return tuple(nums) if nums else (9999,)
 
 
+def is_verified_batch(q):
+    tags = str(q.get("tags", ""))
+    if "已核對" in tags:
+        return True
+    # 早期 questions_confusion_v3.js 建立時尚未統一加上「已核對」tag，
+    # 但該批題已具官方教材、章節定位與解析，且是既有正式「易混淆」核對批次。
+    if q.get("_source_file") == "questions_confusion_v3.js" and "易混淆" in tags:
+        return True
+    return False
+
+
 def validate(questions):
     valid = []
     seen = set()
     errors = []
+    legacy_verified = 0
     for q in questions:
         qid = str(q.get("id", "")).strip()
-        required = ["question", "option_a", "option_b", "option_c", "option_d", "answer", "explanation", "source_title", "source_locator"]
+        required = [
+            "question", "option_a", "option_b", "option_c", "option_d",
+            "answer", "explanation", "source_title", "source_locator"
+        ]
         if not qid or qid in seen:
             errors.append(f"重複或缺少題號: {qid}")
             continue
@@ -82,13 +112,15 @@ def validate(questions):
         if str(q.get("answer", "")).strip().upper() not in "ABCD":
             errors.append(f"答案格式錯誤: {qid}")
             continue
-        if "已核對" not in str(q.get("tags", "")):
-            errors.append(f"未標記已核對: {qid}")
+        if not is_verified_batch(q):
+            errors.append(f"未通過已核對批次判定: {qid}")
             continue
         unit = unit_of(q)
         if unit not in UNIT_NAMES:
             errors.append(f"無法判定單元: {qid}")
             continue
+        if q.get("_source_file") == "questions_confusion_v3.js" and "已核對" not in str(q.get("tags", "")):
+            legacy_verified += 1
         seen.add(qid)
         valid.append(q)
 
@@ -96,9 +128,14 @@ def validate(questions):
         print("題庫守門排除/異常項目:")
         for e in errors:
             print(" -", e)
+
+    counts = Counter(unit_of(q) for q in valid)
     if len(valid) != 300:
-        counts = Counter(unit_of(q) for q in valid)
         raise RuntimeError(f"已核對有效題數應為300，實際為{len(valid)}；單元分布={dict(sorted(counts.items()))}")
+    if dict(sorted(counts.items())) != TARGET_COUNTS:
+        raise RuntimeError(f"單元題數不符合300題規格：{dict(sorted(counts.items()))}")
+
+    print(f"Legacy confusion verified batch accepted: {legacy_verified}")
     return sorted(valid, key=lambda q: (int(unit_of(q)), numeric_id(q), str(q.get("id", ""))))
 
 
@@ -116,13 +153,6 @@ def set_run_font(run, name="Noto Sans CJK TC", size=16, bold=None):
         rFonts.set(qn(f"w:{attr}"), name)
 
 
-def set_para_keep(p, keep_next=False):
-    p.paragraph_format.keep_with_next = keep_next
-    p.paragraph_format.widow_control = True
-    p.paragraph_format.space_after = Pt(0)
-    p.paragraph_format.line_spacing = 1.15
-
-
 def add_text_paragraph(doc, text, size=16, bold=False, align=None, before=0, after=0, keep_next=False):
     p = doc.add_paragraph()
     if align is not None:
@@ -131,6 +161,7 @@ def add_text_paragraph(doc, text, size=16, bold=False, align=None, before=0, aft
     p.paragraph_format.space_after = Pt(after)
     p.paragraph_format.line_spacing = 1.15
     p.paragraph_format.keep_with_next = keep_next
+    p.paragraph_format.widow_control = True
     r = p.add_run(text)
     set_run_font(r, size=size, bold=bold)
     return p
@@ -183,13 +214,13 @@ def setup_document():
 def add_cover(doc):
     add_text_paragraph(doc, "台電電力交易平台專業人員資格測驗", size=24, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, before=70, after=14)
     add_text_paragraph(doc, "300題紙本刷題版", size=24, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, after=22)
-    add_text_paragraph(doc, "A4｜正文16pt｜題目與答案解析分開", size=16, bold=False, align=WD_ALIGN_PARAGRAPH.CENTER, after=28)
+    add_text_paragraph(doc, "A4｜正文16pt｜題目與答案解析分開", size=16, align=WD_ALIGN_PARAGRAPH.CENTER, after=28)
     add_text_paragraph(doc, "使用方式", size=18, bold=True, after=8)
     notes = [
         "1. 題目冊依第1～10單元排列，請直接在選項前的括號做記號。",
         "2. 請先完成題目冊，再翻至後半部答案解析區對答案。",
         "3. 每題答案解析均保留官方教材名稱與章節定位，方便回查。",
-        "4. 本題庫僅納入標示「已核對」且通過欄位檢查的題目。",
+        "4. 本題庫僅納入來源與解析欄位完整、且屬已核對批次的題目。",
         "5. 市場規則可能更新，考前仍應以台電公司最新公告版本為準。",
     ]
     for t in notes:
@@ -206,11 +237,10 @@ def add_unit_heading(doc, unit, section_label):
 def add_question(doc, number, q):
     level = str(q.get("level", ""))
     topic = str(q.get("topic", ""))
-    p = add_text_paragraph(doc, f"{number}. {q['question']}", size=16, bold=True, before=8, after=3, keep_next=True)
+    add_text_paragraph(doc, f"{number}. {q['question']}", size=16, bold=True, before=8, after=3, keep_next=True)
     for idx, letter in enumerate("ABCD"):
         text = str(q[f"option_{letter.lower()}"])
-        keep = idx < 3
-        add_text_paragraph(doc, f"(   ) {letter}. {text}", size=16, after=2, keep_next=keep)
+        add_text_paragraph(doc, f"(   ) {letter}. {text}", size=16, after=2, keep_next=(idx < 3))
     meta = doc.add_paragraph()
     meta.paragraph_format.space_before = Pt(2)
     meta.paragraph_format.space_after = Pt(8)

@@ -16,15 +16,24 @@
 
     for(const q of list){
       const answer = String(q?.answer || "").toUpperCase();
+      const tags = String(q?.tags || "");
       const requiredText = [q?.id,q?.subject,q?.topic,q?.level,q?.question,q?.option_a,q?.option_b,q?.option_c,q?.option_d,q?.explanation,q?.source_title,q?.source_locator];
+      const legacyConfusionVerified = /^C\d+-\d+$/.test(String(q?.id || ""))
+        && tags.includes("易混淆")
+        && String(q?.source_title || "").trim().length > 0
+        && String(q?.source_locator || "").trim().length > 0;
+      const verified = tags.includes("已核對") || legacyConfusionVerified;
       const ok = requiredText.every(v => String(v ?? "").trim().length > 0)
         && ["A","B","C","D"].includes(answer)
-        && String(q?.tags || "").includes("已核對");
+        && verified;
 
       if(!ok){ invalid.push(q?.id || "(無題號)"); continue; }
       if(seen.has(q.id)){ duplicates.push(q.id); continue; }
       seen.add(q.id);
       q.answer = answer;
+      if(legacyConfusionVerified && !tags.includes("已核對")){
+        q.tags = `${tags}${tags ? ";" : ""}已核對`;
+      }
       valid.push(q);
       const unit = unitOf(q);
       byUnit[unit] = (byUnit[unit] || 0) + 1;
