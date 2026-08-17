@@ -19,3 +19,8 @@ window.QUIZ_CONFIG = {
   MOCK_SUBJECT1_COUNT: 30,
   MOCK_SUBJECT2_COUNT: 45
 };
+
+// 載入「備考教練」：今日任務、連續答對、成就徽章、進步提示與動態鼓勵。
+if (document.readyState === "loading") {
+  document.write('<script src="coach.js?v=20260817"><\/script>');
+}
