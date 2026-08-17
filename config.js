@@ -13,11 +13,12 @@ window.QUIZ_CONFIG = {
   SUBJECT1_WEIGHT: 0.50,
   SUBJECT2_WEIGHT: 0.50,
 
-  // 正式模擬考時間依115年筆試時長；題數為本站模擬配置，不代表官方實際題數。
+  // 正式模擬考時間依115年筆試時長；目前題數採已核對題庫可支援的25題／科。
+  // 題數為本站模擬配置，不代表官方實際題數。
   MOCK_SUBJECT1_MINUTES: 60,
   MOCK_SUBJECT2_MINUTES: 90,
-  MOCK_SUBJECT1_COUNT: 30,
-  MOCK_SUBJECT2_COUNT: 45
+  MOCK_SUBJECT1_COUNT: 25,
+  MOCK_SUBJECT2_COUNT: 25
 };
 
 // 載入「備考教練」：今日任務、連續答對、成就徽章、進步提示與動態鼓勵。
