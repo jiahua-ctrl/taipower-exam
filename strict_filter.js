@@ -1,3 +1,4 @@
-// 正式模擬考嚴格核對模式：只保留已完成官方教材核對的 V / C 題目。
+// 正式模擬考嚴格核對模式：載入高鑑別已核對題，並只保留標示「已核對」的題目。
+document.write('<script src="questions_verified_high_discrimination_v1.js"><\/script>');
 window.LOCAL_QUESTIONS = (Array.isArray(window.LOCAL_QUESTIONS) ? window.LOCAL_QUESTIONS : [])
-  .filter(q => /^(V|C)/.test(String(q.id || "")));
+  .filter(q => String(q.tags || "").includes("已核對"));
