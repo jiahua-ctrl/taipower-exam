@@ -12,16 +12,16 @@
 </head>
 <body>
   <div id="introView" class="mock-shell">
-    <div class="mock-top"><a href="index.html">← 回刷題首頁</a><span>115年備考用｜非官方考古題</span></div>
+    <div class="mock-top"><a href="index.html">← 回刷題首頁</a><span>嚴格核對模式｜非官方考古題</span></div>
     <section class="mock-card mock-hero">
-      <span class="eyebrow">正式模式</span>
+      <span class="eyebrow">正式模式｜僅使用已核對題</span>
       <h1>⚡ 兩科限時模擬考</h1>
       <p>不逐題顯示答案；完成第一科後進入第二科，最後才一次公布成績、通過判定、弱點與錯題解析。</p>
       <div class="mock-grid">
-        <div class="mock-kpi"><b>科目一｜60 分鐘</b><span>電力系統與電力市場｜本站抽 <strong id="s1Count">30</strong> 題</span></div>
-        <div class="mock-kpi"><b>科目二｜90 分鐘</b><span>電力交易平台市場規則｜本站抽 <strong id="s2Count">45</strong> 題</span></div>
+        <div class="mock-kpi"><b>科目一｜60 分鐘</b><span>電力系統與電力市場｜本站抽 <strong id="s1Count">25</strong> 題</span></div>
+        <div class="mock-kpi"><b>科目二｜90 分鐘</b><span>電力交易平台市場規則｜本站抽 <strong id="s2Count">25</strong> 題</span></div>
       </div>
-      <p class="mock-note">及格判定：兩科各以100分換算，兩科平均達70分，且任一科不得低於60分。本頁的題數為本站為了練習所做的模擬配置，不代表官方公布的實際題數。</p>
+      <p class="mock-note">目前模擬考只會從「已能追溯至官方教材依據」的題目抽題。及格判定：兩科各以100分換算，兩科平均達70分，且任一科不得低於60分。題數為本站練習配置，不代表官方實際題數。</p>
       <div class="mock-actions"><button id="startMockBtn" class="mock-primary">開始第一科</button><a class="mock-secondary" href="index.html">先回去練習</a></div>
     </section>
   </div>
@@ -44,10 +44,9 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="questions.js"></script>
-  <script src="questions_extra.js"></script>
-  <script src="questions_unit1_dad.js"></script><script src="questions_unit2_dad.js"></script><script src="questions_unit3_dad.js"></script><script src="questions_unit4_dad.js"></script><script src="questions_unit5_dad.js"></script><script src="questions_unit6_dad.js"></script><script src="questions_unit7_dad.js"></script><script src="questions_unit8_dad.js"></script><script src="questions_unit9_dad.js"></script><script src="questions_unit10_dad.js"></script>
+  <script src="questions_verified_core_v1.js"></script>
   <script src="questions_confusion_v3.js"></script>
+  <script src="strict_filter.js"></script>
   <script src="mock.js"></script>
 </body>
 </html>
