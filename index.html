@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b5f63">
+  <title>台電電力交易平台資格測驗｜刷題系統</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">⚡</div>
+      <div>
+        <h1 id="appTitle">台電電力交易平台資格測驗｜刷題系統</h1>
+        <p>115年備考用｜非官方考古題</p>
+      </div>
+    </div>
+    <button id="themeBtn" class="ghost small" aria-label="切換深色模式">🌙</button>
+  </header>
+
+  <main class="container">
+    <section id="homeView" class="view active">
+      <div class="hero card">
+        <div>
+          <span class="eyebrow">自主刷題 · 錯題重練 · 弱點分析</span>
+          <h2>今天要練哪一種？</h2>
+          <p id="dataStatus" class="muted">正在讀取題庫…</p>
+        </div>
+        <div class="hero-kpi">
+          <span id="totalQuestions">0</span>
+          <small>可用題目</small>
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <button class="mode-card" data-mode="random10">
+          <span class="mode-icon">🎯</span><b>隨機 10 題</b><small>快速暖身</small>
+        </button>
+        <button class="mode-card" data-mode="random20">
+          <span class="mode-icon">📝</span><b>隨機 20 題</b><small>完整練習</small>
+        </button>
+        <button class="mode-card" data-mode="subject1">
+          <span class="mode-icon">⚙️</span><b>科目一</b><small>電力系統與電力市場</small>
+        </button>
+        <button class="mode-card" data-mode="subject2">
+          <span class="mode-icon">📘</span><b>科目二</b><small>市場規則</small>
+        </button>
+        <button class="mode-card" data-mode="wrong">
+          <span class="mode-icon">❌</span><b>只練錯題</b><small id="wrongCountLabel">目前 0 題</small>
+        </button>
+        <button class="mode-card" data-mode="all">
+          <span class="mode-icon">⏱️</span><b>全題模擬</b><small>使用目前全部題庫</small>
+        </button>
+      </div>
+
+      <section class="card dashboard">
+        <div class="section-title">
+          <div><span class="eyebrow">學習紀錄</span><h3>弱點雷達</h3></div>
+          <button id="resetStatsBtn" class="ghost danger small">清除紀錄</button>
+        </div>
+        <div id="weaknessList" class="weakness-list"></div>
+      </section>
+
+      <section class="notice card">
+        <b>使用提醒</b>
+        <p>本系統題目依官方資料與現行規則整理為模擬題，不代表正式考試題目。規則更新時，請同步更新題庫。</p>
+      </section>
+    </section>
+
+    <section id="quizView" class="view">
+      <div class="quiz-head">
+        <button id="quitBtn" class="ghost small">← 返回</button>
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="questionProgress">1 / 10</span>
+            <span id="quizScore">答對 0</span>
+          </div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+      </div>
+
+      <article class="question-card card">
+        <div class="question-meta">
+          <span id="questionSubject" class="pill"></span>
+          <span id="questionTopic" class="pill subtle"></span>
+          <span id="questionLevel" class="pill subtle"></span>
+        </div>
+        <h2 id="questionText"></h2>
+        <div id="options" class="options"></div>
+
+        <div id="feedback" class="feedback hidden">
+          <div id="feedbackTitle" class="feedback-title"></div>
+          <p id="explanation"></p>
+          <div id="sourceBox" class="source-box"></div>
+        </div>
+
+        <button id="nextBtn" class="primary hidden">下一題 →</button>
+      </article>
+    </section>
+
+    <section id="resultView" class="view">
+      <section class="result-card card">
+        <div id="resultEmoji" class="result-emoji">🎉</div>
+        <span class="eyebrow">本次作答完成</span>
+        <h2 id="resultTitle">完成！</h2>
+        <div class="score-big"><span id="resultScore">0</span><small>%</small></div>
+        <p id="resultSummary" class="muted"></p>
+        <div id="subjectScores" class="subject-scores"></div>
+        <div class="result-actions">
+          <button id="retryBtn" class="primary">再練一次</button>
+          <button id="homeBtn" class="ghost">回首頁</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <span>資料來源以題庫中標示之台電官方資料為準</span>
+    <span>｜</span>
+    <span>作答紀錄只儲存在此裝置瀏覽器</span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
