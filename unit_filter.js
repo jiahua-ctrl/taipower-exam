@@ -4,6 +4,7 @@ window.LOCAL_QUESTIONS = [];
 document.write('<script src="questions_verified_core_v1.js"><\/script>');
 document.write('<script src="questions_confusion_v3.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v1.js"><\/script>');
+document.write('<script src="questions_verified_high_discrimination_v2.js"><\/script>');
 
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -123,7 +124,12 @@ document.write('<script src="questions_verified_high_discrimination_v1.js"><\/sc
     } else {
       setTimeout(() => {
         const status = document.getElementById("dataStatus");
-        if(status && !status.textContent.includes("Google")) status.textContent = `嚴格核對模式｜目前只使用 ${window.LOCAL_QUESTIONS.length} 題已核對題庫`;
+        if(status && !status.textContent.includes("Google")){
+          const target = Number(window.QUIZ_CONFIG?.TARGET_QUESTION_COUNT || 300);
+          const current = window.LOCAL_QUESTIONS.length;
+          const pct = Math.min(100, Math.round(current / target * 100));
+          status.textContent = `嚴格核對模式｜已核對 ${current} / ${target} 題（${pct}%）`;
+        }
       }, 80);
     }
 

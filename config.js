@@ -4,6 +4,7 @@ window.QUIZ_CONFIG = {
   APP_TITLE: "台電電力交易平台資格測驗｜刷題系統",
   EXAM_DATE: "2026-10-03",
   DAILY_TARGET: 20,
+  TARGET_QUESTION_COUNT: 300,
 
   // 115年備考：兩科各100分；本站正式模擬以兩科平均判定，且單科不得低於60分。
   PASS_TOTAL: 70,
