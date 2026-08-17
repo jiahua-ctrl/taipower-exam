@@ -1,6 +1,4 @@
 window.QUIZ_CONFIG = {
-  // 將 Google 試算表「題庫」工作表發布成 CSV 後，把網址貼在引號內。
-  // 留空時，網站會使用內建題庫。
   GOOGLE_SHEET_CSV_URL: "",
 
   APP_TITLE: "台電電力交易平台資格測驗｜刷題系統",
@@ -13,16 +11,14 @@ window.QUIZ_CONFIG = {
   SUBJECT1_WEIGHT: 0.50,
   SUBJECT2_WEIGHT: 0.50,
 
-  // 正式模擬考時間依115年筆試時長；目前題數採已核對題庫可支援的25題／科。
-  // 題數為本站模擬配置，不代表官方實際題數。
+  // 正式模擬考時間依115年筆試時長；題數為本站練習配置，不代表官方實際題數。
   MOCK_SUBJECT1_MINUTES: 60,
   MOCK_SUBJECT2_MINUTES: 90,
-  MOCK_SUBJECT1_COUNT: 25,
-  MOCK_SUBJECT2_COUNT: 25
+  MOCK_SUBJECT1_COUNT: 30,
+  MOCK_SUBJECT2_COUNT: 45
 };
 
-// 載入「備考教練」：今日任務、連續答對、成就徽章、進步提示與動態鼓勵。
-// 載入「間隔複習」：今日到期題、記憶熟練度與下次複習日期。
+// 載入備考教練與間隔複習。
 if (document.readyState === "loading") {
   document.write('<script src="coach.js?v=20260817"><\/script>');
   document.write('<script src="spaced_review.js?v=20260817"><\/script>');
