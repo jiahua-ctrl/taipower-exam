@@ -1,4 +1,7 @@
-// 在 app.js 讀取 LOCAL_QUESTIONS 前同步載入新一批理解／情境／易混淆題。
+// 嚴格核對模式：舊題檔即使仍存在 repo，也不進入爸爸正式刷題池。
+// 目前只載入已能對到台電官方教材依據的核心題＋已核對易混淆題。
+window.LOCAL_QUESTIONS = [];
+document.write('<script src="questions_verified_core_v1.js"><\/script>');
 document.write('<script src="questions_confusion_v3.js"><\/script>');
 
 (() => {
@@ -39,18 +42,17 @@ document.write('<script src="questions_confusion_v3.js"><\/script>');
   }
 
   function filterLabel(){
-    if(isUnitRun) return `第 ${Number(selectedUnit)} 單元專項練習`;
+    if(isUnitRun) return `第 ${Number(selectedUnit)} 單元專項練習｜僅已核對題`;
     return ({
-      level1:"Level 1｜基礎記憶題",
-      level2:"Level 2｜理解辨識題",
-      level3:"Level 3｜情境／進階題",
-      confusion:"🔥 易混淆規則專項"
-    })[selectedFilter] || "專項練習";
+      level1:"Level 1｜基礎記憶題｜僅已核對題",
+      level2:"Level 2｜理解辨識題｜僅已核對題",
+      level3:"Level 3｜情境／進階題｜僅已核對題",
+      confusion:"🔥 易混淆規則專項｜僅已核對題"
+    })[selectedFilter] || "專項練習｜僅已核對題";
   }
 
   applyFilters();
 
-  // 原本的第1～10單元按鈕。
   document.querySelectorAll("[data-unit]").forEach(btn => {
     btn.addEventListener("click", (event) => {
       event.preventDefault();
@@ -62,22 +64,20 @@ document.write('<script src="questions_confusion_v3.js"><\/script>');
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    // 將原本「全題模擬」改名，避免和真正限時模擬混淆。
     const allBtn = document.querySelector('[data-mode="all"]');
     if(allBtn){
       const b = allBtn.querySelector("b");
       const s = allBtn.querySelector("small");
       if(b) b.textContent = "全題練習";
-      if(s) s.textContent = "不限時｜逐題看解析";
+      if(s) s.textContent = "僅已核對題｜不限時看解析";
 
       const mock = document.createElement("a");
       mock.className = "mode-card featured-mode";
       mock.href = "mock.html";
-      mock.innerHTML = '<span class="mode-icon">⏱️</span><b>正式模擬考</b><small>兩科限時｜作答完才看答案</small>';
+      mock.innerHTML = '<span class="mode-icon">⏱️</span><b>正式模擬考</b><small>僅已核對題｜兩科限時</small>';
       allBtn.parentElement?.appendChild(mock);
     }
 
-    // 在「計算題＋單元」區加入難度與易混淆入口。
     const calcBtn = document.querySelector('[data-mode="calc"]');
     const grid = calcBtn?.parentElement;
     if(grid && !document.getElementById("difficultyModes")){
@@ -119,9 +119,13 @@ document.write('<script src="questions_confusion_v3.js"><\/script>');
           });
         }
       }, 0);
+    } else {
+      setTimeout(() => {
+        const status = document.getElementById("dataStatus");
+        if(status && !status.textContent.includes("Google")) status.textContent = `嚴格核對模式｜目前只使用 ${window.LOCAL_QUESTIONS.length} 題已核對題庫`;
+      }, 80);
     }
 
-    // 舊版 app.js 的混合成績文字是40/60；115版練習改為兩科平均。
     const scoreBox = document.getElementById("subjectScores");
     if(scoreBox){
       new MutationObserver(() => {
