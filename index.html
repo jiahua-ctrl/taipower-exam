@@ -35,180 +35,92 @@
       </div>
 
       <section class="exam-dashboard-grid" aria-label="備考進度">
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">✅</span>
-          <div class="exam-stat-label">今日練習</div>
-          <div class="exam-stat-value"><strong id="todayPractice">0</strong><small> 題</small></div>
-          <div id="todayPracticeHint" class="exam-stat-hint">今天先完成 20 題</div>
-        </div>
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">⚙️</span>
-          <div class="exam-stat-label">第一科正確率</div>
-          <div class="exam-stat-value"><strong id="subject1Accuracy">--</strong><small>%</small></div>
-          <div id="subject1Status" class="exam-stat-hint">尚未作答</div>
-        </div>
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">📘</span>
-          <div class="exam-stat-label">第二科正確率</div>
-          <div class="exam-stat-value"><strong id="subject2Accuracy">--</strong><small>%</small></div>
-          <div id="subject2Status" class="exam-stat-hint">尚未作答</div>
-        </div>
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">🎯</span>
-          <div class="exam-stat-label">最弱單元</div>
-          <div id="weakestUnit" class="exam-stat-value text-value">尚無資料</div>
-          <div id="weakestUnitHint" class="exam-stat-hint">作答後自動分析</div>
-        </div>
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">❌</span>
-          <div class="exam-stat-label">錯題數</div>
-          <div class="exam-stat-value"><strong id="wrongCountDashboard">0</strong><small> 題</small></div>
-          <div class="exam-stat-hint">答對後會移出錯題本</div>
-        </div>
-        <div class="exam-stat card">
-          <span class="exam-stat-icon">📅</span>
-          <div class="exam-stat-label">距離考試</div>
-          <div class="exam-stat-value"><strong id="daysUntilExamCard">--</strong><small> 天</small></div>
-          <div class="exam-stat-hint">115/10/3（六）筆試</div>
-        </div>
+        <div class="exam-stat card"><span class="exam-stat-icon">✅</span><div class="exam-stat-label">今日練習</div><div class="exam-stat-value"><strong id="todayPractice">0</strong><small> 題</small></div><div id="todayPracticeHint" class="exam-stat-hint">今天先完成 20 題</div></div>
+        <div class="exam-stat card"><span class="exam-stat-icon">⚙️</span><div class="exam-stat-label">第一科正確率</div><div class="exam-stat-value"><strong id="subject1Accuracy">--</strong><small>%</small></div><div id="subject1Status" class="exam-stat-hint">尚未作答</div></div>
+        <div class="exam-stat card"><span class="exam-stat-icon">📘</span><div class="exam-stat-label">第二科正確率</div><div class="exam-stat-value"><strong id="subject2Accuracy">--</strong><small>%</small></div><div id="subject2Status" class="exam-stat-hint">尚未作答</div></div>
+        <div class="exam-stat card"><span class="exam-stat-icon">🎯</span><div class="exam-stat-label">最弱單元</div><div id="weakestUnit" class="exam-stat-value text-value">尚無資料</div><div id="weakestUnitHint" class="exam-stat-hint">作答後自動分析</div></div>
+        <div class="exam-stat card"><span class="exam-stat-icon">❌</span><div class="exam-stat-label">錯題數</div><div class="exam-stat-value"><strong id="wrongCountDashboard">0</strong><small> 題</small></div><div class="exam-stat-hint">答對後會移出錯題本</div></div>
+        <div class="exam-stat card"><span class="exam-stat-icon">📅</span><div class="exam-stat-label">距離考試</div><div class="exam-stat-value"><strong id="daysUntilExamCard">--</strong><small> 天</small></div><div class="exam-stat-hint">115/10/3（六）筆試</div></div>
       </section>
 
       <section class="card today-plan">
         <div class="section-title">
-          <div>
-            <span class="eyebrow">今天就從這裡開始</span>
-            <h3 id="todayPlanTitle">今日建議：先做 20 題</h3>
-          </div>
+          <div><span class="eyebrow">今天就從這裡開始</span><h3 id="todayPlanTitle">今日建議：先做 20 題</h3></div>
           <div class="question-count-chip">題庫 <span id="totalQuestions">0</span> 題</div>
         </div>
         <p id="todayPlanText" class="muted">完成後再看弱點，決定下一輪要練哪個單元。</p>
         <div class="mode-grid quick-mode-grid">
-          <button class="mode-card featured-mode" data-mode="random20">
-            <span class="mode-icon">📝</span><b>今日 20 題</b><small>建議每日基本量</small>
-          </button>
-          <button class="mode-card" data-mode="random10">
-            <span class="mode-icon">🎯</span><b>快速 10 題</b><small>時間少也能維持手感</small>
-          </button>
-          <button class="mode-card" data-mode="wrong">
-            <span class="mode-icon">❌</span><b>錯題複習</b><small id="wrongCountLabel">目前 0 題</small>
-          </button>
+          <button class="mode-card featured-mode" data-mode="random20"><span class="mode-icon">📝</span><b>今日 20 題</b><small>建議每日基本量</small></button>
+          <button class="mode-card" data-mode="random10"><span class="mode-icon">🎯</span><b>快速 10 題</b><small>時間少也能維持手感</small></button>
+          <button class="mode-card" data-mode="wrong"><span class="mode-icon">❌</span><b>錯題複習</b><small id="wrongCountLabel">目前 0 題</small></button>
         </div>
       </section>
 
       <section class="card dashboard">
-        <div class="section-title">
-          <div><span class="eyebrow">依科目練習</span><h3>兩科分開刷題</h3></div>
-        </div>
+        <div class="section-title"><div><span class="eyebrow">依科目練習</span><h3>兩科分開刷題</h3></div></div>
         <div class="mode-grid">
-          <button class="mode-card" data-mode="subject1">
-            <span class="mode-icon">⚙️</span><b>科目一</b><small>電力系統與電力市場</small>
-          </button>
-          <button class="mode-card" data-mode="subject2">
-            <span class="mode-icon">📘</span><b>科目二</b><small>市場規則</small>
-          </button>
-          <button class="mode-card" data-mode="all">
-            <span class="mode-icon">⏱️</span><b>全題模擬</b><small>使用目前全部題庫</small>
-          </button>
+          <button class="mode-card" data-mode="subject1"><span class="mode-icon">⚙️</span><b>科目一</b><small>電力系統與電力市場</small></button>
+          <button class="mode-card" data-mode="subject2"><span class="mode-icon">📘</span><b>科目二</b><small>市場規則</small></button>
+          <button class="mode-card" data-mode="all"><span class="mode-icon">⏱️</span><b>全題模擬</b><small>使用目前全部題庫</small></button>
         </div>
       </section>
 
       <section class="card dashboard">
-        <div class="section-title">
-          <div><span class="eyebrow">爸爸指定重點</span><h3>計算題與第 4／6／7／8 單元</h3></div>
-        </div>
+        <div class="section-title"><div><span class="eyebrow">單元專項練習</span><h3>第 1～10 單元都可以單獨刷題</h3></div></div>
         <div class="mode-grid">
-          <button class="mode-card" data-mode="calc">
-            <span class="mode-icon">🧮</span><b>只練計算題</b><small>公式、費用、執行率、結算</small>
-          </button>
-          <button class="mode-card" data-mode="unit4">
-            <span class="mode-icon">4️⃣</span><b>第 4 單元</b><small>輔助服務概論</small>
-          </button>
-          <button class="mode-card" data-mode="unit6">
-            <span class="mode-icon">6️⃣</span><b>第 6 單元</b><small>參與作法與能力測試</small>
-          </button>
-          <button class="mode-card" data-mode="unit7">
-            <span class="mode-icon">7️⃣</span><b>第 7 單元</b><small>交易商品規格與 SBSPM</small>
-          </button>
-          <button class="mode-card" data-mode="unit8">
-            <span class="mode-icon">8️⃣</span><b>第 8 單元</b><small>市場運作與結算</small>
-          </button>
+          <button class="mode-card" data-unit="01"><span class="mode-icon">1️⃣</span><b>第 1 單元</b><small>台灣電力系統概論</small></button>
+          <button class="mode-card" data-unit="02"><span class="mode-icon">2️⃣</span><b>第 2 單元</b><small>電力系統運轉與調度</small></button>
+          <button class="mode-card" data-unit="03"><span class="mode-icon">3️⃣</span><b>第 3 單元</b><small>電力交易市場概述</small></button>
+          <button class="mode-card" data-unit="04"><span class="mode-icon">4️⃣</span><b>第 4 單元</b><small>輔助服務概論</small></button>
+          <button class="mode-card" data-unit="05"><span class="mode-icon">5️⃣</span><b>第 5 單元</b><small>管理規範及作業程序總覽</small></button>
+          <button class="mode-card" data-unit="06"><span class="mode-icon">6️⃣</span><b>第 6 單元</b><small>日前輔助服務市場參與作法</small></button>
+          <button class="mode-card" data-unit="07"><span class="mode-icon">7️⃣</span><b>第 7 單元</b><small>交易商品項目規格</small></button>
+          <button class="mode-card" data-unit="08"><span class="mode-icon">8️⃣</span><b>第 8 單元</b><small>日前輔助服務市場運作</small></button>
+          <button class="mode-card" data-unit="09"><span class="mode-icon">9️⃣</span><b>第 9 單元</b><small>備用容量交易機制</small></button>
+          <button class="mode-card" data-unit="10"><span class="mode-icon">🔟</span><b>第 10 單元</b><small>電力交易市場推動與展望</small></button>
+          <button class="mode-card" data-mode="calc"><span class="mode-icon">🧮</span><b>只練計算題</b><small>公式、費用、執行率、結算</small></button>
         </div>
       </section>
 
       <section class="card dashboard">
-        <div class="section-title">
-          <div><span class="eyebrow">學習紀錄</span><h3>弱點分析</h3></div>
-          <button id="resetStatsBtn" class="ghost danger small">清除紀錄</button>
-        </div>
+        <div class="section-title"><div><span class="eyebrow">學習紀錄</span><h3>弱點分析</h3></div><button id="resetStatsBtn" class="ghost danger small">清除紀錄</button></div>
         <div id="weaknessList" class="weakness-list"></div>
       </section>
 
-      <section class="notice card">
-        <b>使用提醒</b>
-        <p>本系統題目依官方資料與現行規則整理為模擬題，不代表正式考試題目。規則更新時，請同步更新題庫。</p>
-      </section>
+      <section class="notice card"><b>使用提醒</b><p>本系統題目依官方資料與現行規則整理為模擬題，不代表正式考試題目。規則更新時，請同步更新題庫。</p></section>
     </section>
 
     <section id="quizView" class="view">
-      <div class="quiz-head">
-        <button id="quitBtn" class="ghost small">← 返回</button>
-        <div class="progress-wrap">
-          <div class="progress-meta">
-            <span id="questionProgress">1 / 10</span>
-            <span id="quizScore">答對 0</span>
-          </div>
-          <div class="progress"><div id="progressBar"></div></div>
-        </div>
-      </div>
-
+      <div class="quiz-head"><button id="quitBtn" class="ghost small">← 返回</button><div class="progress-wrap"><div class="progress-meta"><span id="questionProgress">1 / 10</span><span id="quizScore">答對 0</span></div><div class="progress"><div id="progressBar"></div></div></div></div>
       <article class="question-card card">
-        <div class="question-meta">
-          <span id="questionSubject" class="pill"></span>
-          <span id="questionTopic" class="pill subtle"></span>
-          <span id="questionLevel" class="pill subtle"></span>
-        </div>
-        <h2 id="questionText"></h2>
-        <div id="options" class="options"></div>
-
-        <div id="feedback" class="feedback hidden">
-          <div id="feedbackTitle" class="feedback-title"></div>
-          <p id="explanation"></p>
-          <div id="sourceBox" class="source-box"></div>
-        </div>
-
+        <div class="question-meta"><span id="questionSubject" class="pill"></span><span id="questionTopic" class="pill subtle"></span><span id="questionLevel" class="pill subtle"></span></div>
+        <h2 id="questionText"></h2><div id="options" class="options"></div>
+        <div id="feedback" class="feedback hidden"><div id="feedbackTitle" class="feedback-title"></div><p id="explanation"></p><div id="sourceBox" class="source-box"></div></div>
         <button id="nextBtn" class="primary hidden">下一題 →</button>
       </article>
     </section>
 
     <section id="resultView" class="view">
-      <section class="result-card card">
-        <div id="resultEmoji" class="result-emoji">🎉</div>
-        <span class="eyebrow">本次作答完成</span>
-        <h2 id="resultTitle">完成！</h2>
-        <div class="score-big"><span id="resultScore">0</span><small>%</small></div>
-        <p id="resultSummary" class="muted"></p>
-        <div id="subjectScores" class="subject-scores"></div>
-        <div class="result-actions">
-          <button id="retryBtn" class="primary">再練一次</button>
-          <button id="homeBtn" class="ghost">回首頁</button>
-        </div>
-      </section>
+      <section class="result-card card"><div id="resultEmoji" class="result-emoji">🎉</div><span class="eyebrow">本次作答完成</span><h2 id="resultTitle">完成！</h2><div class="score-big"><span id="resultScore">0</span><small>%</small></div><p id="resultSummary" class="muted"></p><div id="subjectScores" class="subject-scores"></div><div class="result-actions"><button id="retryBtn" class="primary">再練一次</button><button id="homeBtn" class="ghost">回首頁</button></div></section>
     </section>
   </main>
 
-  <footer>
-    <span>資料來源以題庫中標示之台電官方資料為準</span>
-    <span>｜</span>
-    <span>作答紀錄只儲存在此裝置瀏覽器</span>
-  </footer>
+  <footer><span>資料來源以題庫中標示之台電官方資料為準</span><span>｜</span><span>作答紀錄只儲存在此裝置瀏覽器</span></footer>
 
   <script src="config.js"></script>
   <script src="questions.js"></script>
   <script src="questions_extra.js"></script>
+  <script src="questions_unit1_dad.js"></script>
+  <script src="questions_unit2_dad.js"></script>
+  <script src="questions_unit3_dad.js"></script>
   <script src="questions_unit4_dad.js"></script>
+  <script src="questions_unit5_dad.js"></script>
   <script src="questions_unit6_dad.js"></script>
   <script src="questions_unit7_dad.js"></script>
   <script src="questions_unit8_dad.js"></script>
+  <script src="questions_unit9_dad.js"></script>
+  <script src="questions_unit10_dad.js"></script>
+  <script src="unit_filter.js"></script>
   <script src="adaptive.js"></script>
   <script src="app.js"></script>
 </body>
