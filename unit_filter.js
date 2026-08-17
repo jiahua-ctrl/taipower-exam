@@ -7,6 +7,11 @@ document.write('<script src="questions_verified_high_discrimination_v1.js"><\/sc
 document.write('<script src="questions_verified_high_discrimination_v2.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v3.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v4.js"><\/script>');
+document.write('<script src="questions_verified_high_discrimination_v5.js"><\/script>');
+document.write('<script src="question_bank_guard.js"><\/script>');
+window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
+  ? window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS)
+  : (Array.isArray(window.LOCAL_QUESTIONS) ? window.LOCAL_QUESTIONS : []).filter(q => String(q.tags || "").includes("已核對"));
 
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -23,7 +28,7 @@ document.write('<script src="questions_verified_high_discrimination_v4.js"><\/sc
 
   function applyFilters(){
     if(!Array.isArray(window.LOCAL_QUESTIONS)) return;
-    let qs = window.LOCAL_QUESTIONS.filter(q => String(q.tags || "").includes("已核對"));
+    let qs = window.LOCAL_QUESTIONS;
     if(isUnitRun){
       const tag = `單元${selectedUnit}`;
       qs = qs.filter(q => String(q.tags || "").includes(tag));
@@ -130,7 +135,9 @@ document.write('<script src="questions_verified_high_discrimination_v4.js"><\/sc
           const target = Number(window.QUIZ_CONFIG?.TARGET_QUESTION_COUNT || 300);
           const current = window.LOCAL_QUESTIONS.length;
           const pct = Math.min(100, Math.round(current / target * 100));
-          status.textContent = `嚴格核對模式｜已核對 ${current} / ${target} 題（${pct}%）`;
+          const audit = window.QUESTION_BANK_AUDIT;
+          const auditNote = audit && (audit.duplicates.length || audit.invalid.length) ? `｜已排除異常 ${audit.duplicates.length + audit.invalid.length} 題` : "｜品質檢查通過";
+          status.textContent = `嚴格核對模式｜已核對 ${current} / ${target} 題（${pct}%）${auditNote}`;
         }
       }, 80);
     }
