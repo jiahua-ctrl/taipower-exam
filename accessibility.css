@@ -9,6 +9,14 @@ html[data-font-size="normal"]{font-size:16px}
 html[data-font-size="large"]{font-size:18px}
 html[data-font-size="xlarge"]{font-size:20px}
 
+html[data-font-size="normal"] body{font-size:17px!important}
+html[data-font-size="large"] body{font-size:19px!important}
+html[data-font-size="xlarge"] body{font-size:22px!important}
+html[data-font-size="xlarge"] .actions a{font-size:22px!important;min-height:66px!important}
+html[data-font-size="xlarge"] .today strong{font-size:24px!important}
+html[data-font-size="xlarge"] .stat small{font-size:17px!important}
+html[data-font-size="xlarge"] .foot{font-size:17px!important}
+
 html[data-font-size="large"] .question-card h2{font-size:30px!important}
 html[data-font-size="large"] .option{font-size:22px!important;line-height:1.7!important;padding:19px 18px!important}
 html[data-font-size="large"] .feedback{font-size:20px!important;line-height:1.85!important}
