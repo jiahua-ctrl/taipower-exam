@@ -1,5 +1,5 @@
 // 嚴格核對模式：舊題檔即使仍存在 repo，也不進入爸爸正式刷題池。
-// 只載入已能對到台電官方教材依據的核心題、易混淆題與高鑑別題。
+// 只載入已能對到台電官方教材依據的核心題、易混淆題、高鑑別題與500題進階計算題。
 window.LOCAL_QUESTIONS = [];
 document.write('<script src="questions_verified_core_v1.js"><\/script>');
 document.write('<script src="questions_confusion_v3.js"><\/script>');
@@ -8,6 +8,7 @@ document.write('<script src="questions_verified_high_discrimination_v2.js"><\/sc
 document.write('<script src="questions_verified_high_discrimination_v3.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v4.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v5.js"><\/script>');
+document.write('<script src="questions_advanced_v2_500.js"><\/script>');
 document.write('<script src="question_bank_guard.js"><\/script>');
 window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
   ? window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS)
@@ -132,7 +133,7 @@ window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
       setTimeout(() => {
         const status = document.getElementById("dataStatus");
         if(status && !status.textContent.includes("Google")){
-          const target = Number(window.QUIZ_CONFIG?.TARGET_QUESTION_COUNT || 300);
+          const target = Number(window.QUIZ_CONFIG?.TARGET_QUESTION_COUNT || 800);
           const current = window.LOCAL_QUESTIONS.length;
           const pct = Math.min(100, Math.round(current / target * 100));
           const audit = window.QUESTION_BANK_AUDIT;
