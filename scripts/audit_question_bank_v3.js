@@ -115,14 +115,17 @@ const backupUnitFixesOk = backupUnitFixes.length === 6
   && backupUnitFixes.every(q => /不須湊成10kW倍數/.test(q.explanation))
   && backupUnitFixes.every(q => correctText(q) === backupUnitExpected[q.id]);
 
-const coreBackup = Object.fromEntries(['V09-001','C9-002','C9-003'].map(id => [id, audited.find(q => q.id === id)]));
-const coreBackupFixesOk = !!coreBackup['V09-001'] && !!coreBackup['C9-002'] && !!coreBackup['C9-003']
-  && /10kW（含）以上/.test(coreBackup['V09-001'].question)
-  && /基本單位為1kW/.test(correctText(coreBackup['V09-001']) || '')
-  && /17kW/.test(coreBackup['C9-002'].question)
-  && /基本單位為1kW/.test(correctText(coreBackup['C9-002']) || '')
-  && !/不得聚合/.test(`${coreBackup['C9-002'].question} ${coreBackup['C9-002'].explanation}`)
-  && /工作日/.test(`${coreBackup['C9-003'].question} ${coreBackup['C9-003'].explanation}`);
+const coreBackupIds = ['V09-001','C9-002','C9-003','HV09-004'];
+const coreBackup = Object.fromEntries(coreBackupIds.map(id => [id, audited.find(q => q.id === id)]));
+const v09Correct = correctText(coreBackup['V09-001']) || '';
+const c902Correct = correctText(coreBackup['C9-002']) || '';
+const c903Correct = correctText(coreBackup['C9-003']) || '';
+const hv904Correct = correctText(coreBackup['HV09-004']) || '';
+const coreBackupFixesOk = coreBackupIds.every(id => !!coreBackup[id])
+  && /10kW/.test(v09Correct) && /1kW/.test(v09Correct)
+  && /17kW/.test(coreBackup['C9-002'].question || '') && /10kW/.test(c902Correct) && /1kW/.test(c902Correct)
+  && /第1～3個工作日/.test(c903Correct) && /第4～5個工作日/.test(c903Correct) && /第6～10個工作日/.test(c903Correct)
+  && /25kW/.test(coreBackup['HV09-004'].question || '') && /10kW/.test(hv904Correct) && /1kW/.test(hv904Correct);
 
 const oldBackupRuleLeaks = audited.filter(q => /基本單位\s*10kW|基本交易單位\s*10kW|以10kW為基本交易單位|以10kW為基本單位/.test(`${q.question} ${q.explanation}`));
 
@@ -143,7 +146,7 @@ const checks = [
   ['SBSPM 45題已改為允許範圍/最近邊界語意', sbspmSemanticOk, sbspmSemanticFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['備用供電容量系統費5題已先整數MW進位再計費', reserveRoundingOk, reserveRounding.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
   ['備用容量6題已區分最低10kW與基本單位1kW', backupUnitFixesOk, backupUnitFixes.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
-  ['原300題V09-001/C9-002/C9-003已套用第5版規則', coreBackupFixesOk, coreBackup],
+  ['原300／高鑑別第9單元4題已套用第5版規則', coreBackupFixesOk, coreBackup],
   ['正式800題無舊版「基本單位10kW」殘留', oldBackupRuleLeaks.length === 0, oldBackupRuleLeaks.map(q=>({id:q.id,question:q.question,explanation:q.explanation}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
