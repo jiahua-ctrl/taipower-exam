@@ -4,6 +4,28 @@
     return m ? m[1] : "??";
   }
 
+  function balanceAnswerPositions(list){
+    const letters = ["A","B","C","D"];
+    list.forEach((q, index) => {
+      const currentAnswer = String(q.answer || "").toUpperCase();
+      const currentIndex = letters.indexOf(currentAnswer);
+      if(currentIndex < 0) return;
+
+      const options = [q.option_a,q.option_b,q.option_c,q.option_d].map(v => String(v));
+      const correct = options[currentIndex];
+      const distractors = options.filter((_, i) => i !== currentIndex);
+      const targetIndex = index % 4;
+      const arranged = distractors.slice();
+      arranged.splice(targetIndex, 0, correct);
+
+      q.option_a = arranged[0];
+      q.option_b = arranged[1];
+      q.option_c = arranged[2];
+      q.option_d = arranged[3];
+      q.answer = letters[targetIndex];
+    });
+  }
+
   window.auditVerifiedQuestionBank = function(input){
     const list = Array.isArray(input) ? input : [];
     const seen = new Set();
@@ -49,10 +71,14 @@
       valid.push(q);
       const unit = unitOf(q);
       byUnit[unit] = (byUnit[unit] || 0) + 1;
-      byAnswer[answer]++;
       const level = String(q.level).charAt(0) || "?";
       byLevel[level] = (byLevel[level] || 0) + 1;
     }
+
+    // 通過品質檢查後才重新排列選項。800題時可精確平衡為A/B/C/D各200題，
+    // 避免長期刷題產生「猜某一位置」的作答偏誤；正確內容本身不變。
+    balanceAnswerPositions(valid);
+    valid.forEach(q => { byAnswer[String(q.answer).toUpperCase()]++; });
 
     const report = {total:valid.length, duplicates, duplicateQuestions, invalid, invalidOptions, byUnit, byAnswer, byLevel};
     window.QUESTION_BANK_AUDIT = report;
