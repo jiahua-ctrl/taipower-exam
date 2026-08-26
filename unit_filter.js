@@ -12,6 +12,7 @@ document.write('<script src="questions_advanced_v2_500.js"><\/script>');
 document.write('<script src="questions_advanced_v3_quality_patch.js"><\/script>');
 document.write('<script src="questions_advanced_v4_edreg_patch.js"><\/script>');
 document.write('<script src="questions_advanced_v5_precision_patch.js"><\/script>');
+document.write('<script src="questions_advanced_v6_sbspm_semantics_patch.js"><\/script>');
 document.write('<script src="question_bank_guard.js"><\/script>');
 window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
   ? window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS)
