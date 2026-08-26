@@ -35,4 +35,34 @@
     q.source_locator = '114.10第5版第四章第24條：備用容量交易資源參與容量須達10kW（含）以上；基本單位為kW（1kW）';
     q.tags = '單元09;計算;備用容量;最低10kW;基本單位1kW;價格換算;115版本修正;已核對';
   });
+
+  // 備用容量媒合的「第1～10日」均為工作日，不是日曆日。
+  // V2保留題6題：把「第X日」明確改成「第X個工作日」。
+  const v2ScheduleIds = ['V2U9-004','V2U9-008','V2U9-012','V2U9-016','V2U9-020','V2U9-024'];
+  v2ScheduleIds.forEach(id => {
+    const q = byId.get(id);
+    if (!q) return;
+    q.topic = '第9單元｜備用容量媒合工作日時程';
+    q.question = String(q.question).replace(/第(\d+)日/g, '第$1個工作日');
+    q.explanation = String(q.explanation).replace(/第(\d+)日/g, '第$1個工作日');
+    q.source_locator = '114.10第5版備用容量交易專區具體時間表：賣方設定第1～3個工作日；審查第4～5個工作日；買方競價第6～10個工作日';
+    q.tags = '單元09;理解;備用容量;交易媒合;工作日;115工作日修正;已核對';
+  });
+
+  // V3新題5題：比例計算仍是3+2+5=10，但單位明確為工作日。
+  const v3ScheduleIds = ['V3U9-011','V3U9-012','V3U9-013','V3U9-014','V3U9-015'];
+  v3ScheduleIds.forEach(id => {
+    const q = byId.get(id);
+    if (!q) return;
+    q.topic = '第9單元｜備用容量媒合工作日時程比例';
+    q.question = String(q.question)
+      .replace('媒合前10日流程', '當次媒合10個工作日流程')
+      .replace('賣方設定3日', '賣方設定3個工作日')
+      .replace('審查2日', '審查2個工作日')
+      .replace('買方競價5日', '買方競價5個工作日')
+      .replace('這10日', '這10個工作日');
+    q.explanation = `${q.explanation} 時程單位為工作日：第1～3個工作日設定、第4～5個工作日審查、第6～10個工作日競價。`;
+    q.source_locator = '114.10第5版備用容量交易專區具體時間表：3個工作日設定＋2個工作日審查＋5個工作日競價';
+    q.tags = '單元09;計算;備用容量;交易媒合;時程;工作日;比例;115工作日修正;已核對';
+  });
 })();
