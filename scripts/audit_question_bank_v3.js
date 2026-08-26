@@ -18,6 +18,7 @@ const files = [
   'questions_advanced_v3_quality_patch.js',
   'questions_advanced_v4_edreg_patch.js',
   'questions_advanced_v5_precision_patch.js',
+  'questions_advanced_v6_sbspm_semantics_patch.js',
   'question_bank_guard.js'
 ];
 
@@ -81,6 +82,20 @@ const precisionFixesOk = precisionFixes.length === 3
   && precisionFixes.some(q => /整數位/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
   && precisionFixes.some(q => /31\.6667%/.test(`${q.question} ${q.explanation} ${q.option_a} ${q.option_b} ${q.option_c} ${q.option_d}`));
 
+const sbspmSemanticIds = [
+  ...Array.from({length:30}, (_,i) => `V3U7-${String(i+1).padStart(3,'0')}`),
+  ...Array.from({length:15}, (_,i) => `V3U7-${String(46+i).padStart(3,'0')}`)
+];
+const sbspmSemanticFixes = audited.filter(q => sbspmSemanticIds.includes(String(q.id || '')));
+const sbspmMixedIds = Array.from({length:5}, (_,i) => `V3U7-${String(26+i).padStart(3,'0')}`);
+const sbspmPowerIds = Array.from({length:15}, (_,i) => `V3U7-${String(46+i).padStart(3,'0')}`);
+const sbspmSemanticOk = sbspmSemanticFixes.length === 45
+  && sbspmSemanticFixes.every(q => String(q.tags || '').includes('115語意修正'))
+  && sbspmSemanticFixes.every(q => /操作曲線允許範圍/.test(`${q.question} ${q.explanation} ${q.source_locator} ${q.tags}`))
+  && sbspmSemanticFixes.every(q => /最近.*邊界|最近上界/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
+  && audited.filter(q => sbspmMixedIds.includes(String(q.id || ''))).every(q => /範圍內/.test(`${q.question} ${q.explanation} ${q.tags}`) && /SBSPM＝100%|SBSPM=100%/.test(`${q.explanation} ${q.source_locator}`))
+  && audited.filter(q => sbspmPowerIds.includes(String(q.id || ''))).every(q => /MW/.test(q.question) && /得標容量百分比/.test(`${q.question} ${q.explanation} ${q.source_locator}`));
+
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
   ['進階題=500', advanced.length === 500, advanced.length],
@@ -95,13 +110,14 @@ const checks = [
   ['E-dReg 26題已改為15分鐘區間語意', edregIntervalFixesOk, edregIntervalFixes.map(q=>q.id)],
   ['E-dReg 5題完整結算已納入容量/475效能/品質/電能服務費', edregFullOk, edregFull.map(q=>({id:q.id,question:q.question}))],
   ['dReg 3題已區分操作曲線4位小數與SBSPM整數取位', precisionFixesOk, precisionFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
+  ['SBSPM 45題已改為允許範圍/最近邊界語意', sbspmSemanticOk, sbspmSemanticFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
   ['進階單元分布符合V3', JSON.stringify(byAdvancedUnit) === JSON.stringify({'04':40,'06':90,'07':160,'08':170,'09':40}), byAdvancedUnit]
 ];
 
-console.log('\n=== 台電爸爸版題庫 V3/V4/V5 自動稽核 ===');
+console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6 自動稽核 ===');
 for (const [name, ok, detail] of checks) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
 }
