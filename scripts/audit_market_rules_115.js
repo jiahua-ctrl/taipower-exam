@@ -6,6 +6,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 const v2 = read('questions_advanced_v2_500.js');
 const v3 = read('questions_advanced_v3_quality_patch.js');
+const guard = read('question_bank_guard.js');
 const formalSources = [
   'questions_verified_core_v1.js',
   'questions_confusion_v3.js',
@@ -15,7 +16,8 @@ const formalSources = [
   'questions_verified_high_discrimination_v4.js',
   'questions_verified_high_discrimination_v5.js',
   'questions_advanced_v2_500.js',
-  'questions_advanced_v3_quality_patch.js'
+  'questions_advanced_v3_quality_patch.js',
+  'question_bank_guard.js'
 ].map(read).join('\n');
 
 const checks = [
@@ -24,7 +26,10 @@ const checks = [
   ['V2/V3仍使用dReg效能350', /pp\s*=\s*350/.test(v2) || /效能350/.test(v3)],
   ['V2仍含E-dReg充500/放2000邏輯', /price\s*=\s*typ===['"]放電['"]\?2000:500/.test(v2)],
   ['正式題源含109500保證金', /109500|109,500/.test(formalSources)],
-  ['正式題源未出現舊sReg現行值59.88', !/59\.88/.test(formalSources)]
+  ['正式題源未出現舊sReg現行值59.88', !/59\.88/.test(formalSources)],
+  ['115年修正層含新版淨計量公式', /charge\/\(1-loss\)\s*-\s*dis\*\(1-loss\)/.test(guard)],
+  ['115年修正層含新版效率額度=充電÷(1-線損率)×20%', /charge\/\(1-loss\)\*0\.20/.test(guard)],
+  ['115年修正層鎖定V3U8-071至080電能損失題', /V3U8-/.test(guard) && /71\+i/.test(guard) && /i<10/.test(guard)]
 ];
 
 console.log('\n=== 115年市場規則常數自動稽核 ===');
