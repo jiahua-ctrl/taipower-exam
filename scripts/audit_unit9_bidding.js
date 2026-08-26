@@ -19,7 +19,7 @@ const checks = [
   ['V3U9-008 同價依完成出價時間', q => /乙/.test(correct(q)||'') && /09:05/.test(q.explanation) && /09:10/.test(q.explanation)],
   ['V3U9-009 高價優先＋同價時間＋部分得標', q => correct(q)==='10kW' && /40kW/.test(q.explanation) && /30kW/.test(q.explanation) && /10kW/.test(q.explanation)],
   ['V3U9-010 買方不得超額購買', q => correct(q)==='2.8MW' && /5\.0−2\.2＝2\.8MW/.test(q.explanation)],
-  ['C9-004 現有競價順序題仍正確', q => /高價者優先/.test(correct(q)||'') && /完成出價時間/.test(correct(q)||'')]
+  ['C9-004 現有競價順序題仍正確', q => /(出價最高者優先|高價者優先)/.test(correct(q)||'') && /完成出價時間/.test(correct(q)||'')]
 ];
 console.log('\n=== 第9單元競價／容量分配驗收 ===');
 let failed=0;
