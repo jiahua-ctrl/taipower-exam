@@ -9,6 +9,7 @@ const v3 = read('questions_advanced_v3_quality_patch.js');
 const v4 = read('questions_advanced_v4_edreg_patch.js');
 const v5 = read('questions_advanced_v5_precision_patch.js');
 const v6 = read('questions_advanced_v6_sbspm_semantics_patch.js');
+const v7 = read('questions_advanced_v7_rounding_patch.js');
 const guard = read('question_bank_guard.js');
 const formalSources = [
   'questions_verified_core_v1.js',
@@ -23,6 +24,7 @@ const formalSources = [
   'questions_advanced_v4_edreg_patch.js',
   'questions_advanced_v5_precision_patch.js',
   'questions_advanced_v6_sbspm_semantics_patch.js',
+  'questions_advanced_v7_rounding_patch.js',
   'question_bank_guard.js'
 ].map(read).join('\n');
 
@@ -44,6 +46,9 @@ const checks = [
   ['V6範圍外SBSPM改與最近操作曲線邊界比較', /範圍外/.test(v6) && /最近操作曲線邊界|最近邊界/.test(v6)],
   ['V6保留4秒滾動取最大值', /4秒滾動.*最大值|4秒滾動執行率取.*最大值/.test(v6)],
   ['備用供電容量系統使用費以整數MW無條件進位', /Math\.ceil\(c\.cap\)/.test(v6) && /systemFee = billedMw \* 1000/.test(v6) && /MW以下無條件進位/.test(v6)],
+  ['V7備用容量參與最低門檻=10kW', /須達10kW（含）以上/.test(v7)],
+  ['V7備用容量交易基本單位=1kW', /交易基本單位為1kW/.test(v7) && /不須湊成10kW倍數/.test(v7)],
+  ['V7以非10倍數容量驗證1kW粒度', /kw:11/.test(v7) && /kw:17/.test(v7) && /kw:23/.test(v7) && /kw:31/.test(v7) && /kw:44/.test(v7) && /kw:59/.test(v7)],
   ['V3備用供電容量保證金以整數MW無條件進位', /Math\.ceil\(a\)\*109500/.test(v3) && /不足1MW進位/.test(v3)],
   ['V3備用容量賣方底價上限=2,000,000元/MW', /2000000\*mw/.test(v3) && /2,000,000元\/MW/.test(v3)],
   ['正式題源含109500保證金', /109500|109,500/.test(formalSources)],
