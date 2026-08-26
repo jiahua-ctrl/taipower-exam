@@ -79,7 +79,7 @@
     q.option_b = fmt(preQuality + energy);
     q.option_c = fmt(qualityPart);
     q.option_d = fmt(energy);
-    // 防止品質指標1時A/B撞值，改用「把15分鐘誤當1小時」作為干擾。
+    // 防止特殊級距造成干擾選項與正解撞值。
     if (q.option_b === q.option_a) {
       let wrongEnergy = 0;
       c.intervals.forEach(([state,p]) => {
@@ -88,6 +88,7 @@
       });
       q.option_b = fmt(qualityPart + wrongEnergy);
     }
+    if (q.option_d === q.option_a) q.option_d = fmt(preQuality);
     q.answer = 'A';
     q.explanation = `容量費＋效能費未乘品質前＝(${c.cp}＋475)×${c.mw}＝${fmt(preQuality)}；乘服務品質指標${c.q}後為${fmt(qualityPart)}。4個15分鐘區間電能服務費合計${fmt(energy)}，因此當小時價金＝${fmt(qualityPart)}＋${fmt(energy)}＝${fmt(total)}。併網型儲能設備之電能損失費在月結算另計。`;
     q.source_locator = 'E-dReg結算：[(容量費＋效能費)×服務品質指標]＋電能服務費；電能服務費按4個15分鐘區間計；併網型儲能另扣月結算電能損失費';
