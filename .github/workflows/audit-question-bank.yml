@@ -1,0 +1,27 @@
+name: Audit Question Bank
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'questions_*.js'
+      - 'question_bank_guard.js'
+      - 'config.js'
+      - 'unit_filter.js'
+      - 'strict_filter.js'
+      - 'scripts/audit_question_bank_v3.js'
+      - '.github/workflows/audit-question-bank.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Audit 800-question bank
+        run: node scripts/audit_question_bank_v3.js
