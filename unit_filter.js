@@ -9,6 +9,7 @@ document.write('<script src="questions_verified_high_discrimination_v3.js"><\/sc
 document.write('<script src="questions_verified_high_discrimination_v4.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v5.js"><\/script>');
 document.write('<script src="questions_advanced_v2_500.js"><\/script>');
+document.write('<script src="questions_advanced_v3_quality_patch.js"><\/script>');
 document.write('<script src="question_bank_guard.js"><\/script>');
 window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
   ? window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS)
@@ -147,7 +148,7 @@ window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
     if(scoreBox){
       new MutationObserver(() => {
         scoreBox.querySelectorAll(".score-row span").forEach(span => {
-          if(span.textContent.includes("40%／60%")) span.textContent = "兩科平均參考";
+          if(span.textContent.includes("40%／60%")) span.textContent = "兩科加權參考";
         });
       }).observe(scoreBox, {childList:true, subtree:true});
     }
