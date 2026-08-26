@@ -28,9 +28,7 @@ for (const file of files) {
   vm.runInThisContext(code, { filename: file });
 }
 
-if (typeof window.auditVerifiedQuestionBank !== 'function') {
-  throw new Error('auditVerifiedQuestionBank 未載入');
-}
+if (typeof window.auditVerifiedQuestionBank !== 'function') throw new Error('auditVerifiedQuestionBank 未載入');
 
 const audited = window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS);
 const report = window.QUESTION_BANK_AUDIT || {};
@@ -99,11 +97,7 @@ const sbspmSemanticOk = sbspmSemanticFixes.length === 45
   && audited.filter(q => sbspmPowerIds.includes(String(q.id || ''))).every(q => /MW/.test(q.question) && /得標容量百分比/.test(`${q.question} ${q.explanation} ${q.source_locator}`));
 
 const reserveRoundingExpected = {
-  'V2U6-006':'14,000元',
-  'V2U6-018':'22,000元',
-  'V2U6-030':'30,000元',
-  'V2U6-042':'18,000元',
-  'V2U6-054':'26,000元'
+  'V2U6-006':'14,000元','V2U6-018':'22,000元','V2U6-030':'30,000元','V2U6-042':'18,000元','V2U6-054':'26,000元'
 };
 const reserveRounding = audited.filter(q => Object.hasOwn(reserveRoundingExpected, String(q.id || '')));
 const reserveRoundingOk = reserveRounding.length === 5
@@ -112,12 +106,7 @@ const reserveRoundingOk = reserveRounding.length === 5
   && reserveRounding.every(q => correctText(q) === reserveRoundingExpected[q.id]);
 
 const backupUnitExpected = {
-  'V2U9-003':'13,200元/年',
-  'V2U9-007':'23,800元/年',
-  'V2U9-011':'36,800元/年',
-  'V2U9-015':'55,800元/年',
-  'V2U9-019':'57,200元/年',
-  'V2U9-023':'88,500元/年'
+  'V2U9-003':'13,200元/年','V2U9-007':'23,800元/年','V2U9-011':'36,800元/年','V2U9-015':'55,800元/年','V2U9-019':'57,200元/年','V2U9-023':'88,500元/年'
 };
 const backupUnitFixes = audited.filter(q => Object.hasOwn(backupUnitExpected, String(q.id || '')));
 const backupUnitFixesOk = backupUnitFixes.length === 6
@@ -125,6 +114,17 @@ const backupUnitFixesOk = backupUnitFixes.length === 6
   && backupUnitFixes.every(q => /10kW（含）以上/.test(q.question) && /基本單位為1kW/.test(q.question))
   && backupUnitFixes.every(q => /不須湊成10kW倍數/.test(q.explanation))
   && backupUnitFixes.every(q => correctText(q) === backupUnitExpected[q.id]);
+
+const coreBackup = Object.fromEntries(['V09-001','C9-002','C9-003'].map(id => [id, audited.find(q => q.id === id)]));
+const coreBackupFixesOk = !!coreBackup['V09-001'] && !!coreBackup['C9-002'] && !!coreBackup['C9-003']
+  && /10kW（含）以上/.test(coreBackup['V09-001'].question)
+  && /基本單位為1kW/.test(correctText(coreBackup['V09-001']) || '')
+  && /17kW/.test(coreBackup['C9-002'].question)
+  && /基本單位為1kW/.test(correctText(coreBackup['C9-002']) || '')
+  && !/不得聚合/.test(`${coreBackup['C9-002'].question} ${coreBackup['C9-002'].explanation}`)
+  && /工作日/.test(`${coreBackup['C9-003'].question} ${coreBackup['C9-003'].explanation}`);
+
+const oldBackupRuleLeaks = audited.filter(q => /基本單位\s*10kW|基本交易單位\s*10kW|以10kW為基本交易單位|以10kW為基本單位/.test(`${q.question} ${q.explanation}`));
 
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
@@ -143,6 +143,8 @@ const checks = [
   ['SBSPM 45題已改為允許範圍/最近邊界語意', sbspmSemanticOk, sbspmSemanticFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['備用供電容量系統費5題已先整數MW進位再計費', reserveRoundingOk, reserveRounding.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
   ['備用容量6題已區分最低10kW與基本單位1kW', backupUnitFixesOk, backupUnitFixes.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
+  ['原300題V09-001/C9-002/C9-003已套用第5版規則', coreBackupFixesOk, coreBackup],
+  ['正式800題無舊版「基本單位10kW」殘留', oldBackupRuleLeaks.length === 0, oldBackupRuleLeaks.map(q=>({id:q.id,question:q.question,explanation:q.explanation}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
@@ -150,9 +152,7 @@ const checks = [
 ];
 
 console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6/V7 自動稽核 ===');
-for (const [name, ok, detail] of checks) {
-  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
-}
+for (const [name, ok, detail] of checks) console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
 console.log('進階題計算標籤：', `${calc.length}/500`);
 console.log('全題答案分布：', report.byAnswer);
 console.log('全題單元分布：', report.byUnit);
