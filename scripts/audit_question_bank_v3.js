@@ -44,11 +44,20 @@ const placeholders = audited.filter(q => [q.option_a,q.option_b,q.option_c,q.opt
 const duplicateOptionQuestions = audited.filter(q => new Set([q.option_a,q.option_b,q.option_c,q.option_d].map(String)).size !== 4);
 const badAnswers = audited.filter(q => !['A','B','C','D'].includes(String(q.answer || '').toUpperCase()));
 const expectedAnswerDistribution = {A:200,B:200,C:200,D:200};
+
 const scanFixIds = ['V3U6-026','V3U6-027','V3U6-028','V3U6-029','V3U6-030'];
 const scanFixes = audited.filter(q => scanFixIds.includes(String(q.id)));
 const scanFixesOk = scanFixes.length === 5
   && scanFixes.every(q => String(q.tags || '').includes('115修正'))
   && scanFixes.every(q => /59\.40|59\.70|60\.30|60\.60/.test(`${q.question} ${q.explanation} ${q.source_locator}`));
+
+const lossFixIds = Array.from({length:10}, (_,i) => `V3U8-${String(71+i).padStart(3,'0')}`);
+const lossFixes = audited.filter(q => lossFixIds.includes(String(q.id)));
+const lossFixesOk = lossFixes.length === 10
+  && lossFixes.every(q => String(q.tags || '').includes('115修正'))
+  && lossFixes.every(q => /效率額度/.test(`${q.question} ${q.explanation}`))
+  && lossFixes.every(q => /÷0\.98×20%/.test(String(q.explanation || '')))
+  && lossFixes.every(q => /總充電÷\(1−線損率\)×20%/.test(String(q.source_locator || '')));
 
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
@@ -60,6 +69,7 @@ const checks = [
   ['答案格式合法', badAnswers.length === 0, badAnswers.map(q=>q.id)],
   ['800題答案A/B/C/D各200', JSON.stringify(report.byAnswer) === JSON.stringify(expectedAnswerDistribution), report.byAnswer],
   ['115年頻率掃描5題已套用範圍修正', scanFixesOk, scanFixes.map(q=>({id:q.id,tags:q.tags,question:q.question}))],
+  ['115年電能損失10題已套用線損率效率額度公式', lossFixesOk, lossFixes.map(q=>({id:q.id,tags:q.tags,explanation:q.explanation}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
