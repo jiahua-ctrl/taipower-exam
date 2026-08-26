@@ -65,4 +65,46 @@
     q.source_locator = '114.10第5版備用容量交易專區具體時間表：3個工作日設定＋2個工作日審查＋5個工作日競價';
     q.tags = '單元09;計算;備用容量;交易媒合;時程;工作日;比例;115工作日修正;已核對';
   });
+
+  // 原300題核心／易混淆題仍殘留第4版或更早的「基本單位10kW」與日曆日語意，於正式載入時覆寫為第5版。
+  const coreRule = byId.get('V09-001');
+  if (coreRule) {
+    coreRule.topic = '第9單元｜備用容量參與門檻與基本單位';
+    coreRule.question = '依114.10第5版，備用容量市場交易資源的參與容量門檻與交易基本單位，下列何者正確？';
+    coreRule.option_a = '參與容量須達10kW（含）以上，交易基本單位為1kW';
+    coreRule.option_b = '參與容量須達10kW（含）以上，交易基本單位為10kW';
+    coreRule.option_c = '參與容量至少1MW，交易基本單位100kW';
+    coreRule.option_d = '沒有最低參與容量';
+    coreRule.answer = 'A';
+    coreRule.explanation = '第5版第二十四條規定：交易資源參與容量須達10kW（含）以上，基本單位為kW（1kW）。因此10kW是最低參與門檻，不是交易粒度。';
+    coreRule.source_locator = '114.10第5版第四章第二十四條：參與容量須達10kW（含）以上；基本單位為kW';
+    coreRule.tags = '單元09;已核對;最低10kW;基本單位1kW;115版本修正';
+  }
+
+  const confusionCapacity = byId.get('C9-002');
+  if (confusionCapacity) {
+    confusionCapacity.topic = '第9單元｜最低10kW與1kW基本單位';
+    confusionCapacity.question = '某備用容量交易資源可提供17kW。依114.10第5版，下列判斷何者正確？';
+    confusionCapacity.option_a = '不能參與，因為17kW不是10kW的整數倍';
+    confusionCapacity.option_b = '可以參與；已達10kW最低門檻，且交易基本單位為1kW';
+    confusionCapacity.option_c = '不能參與，因為最低門檻為100kW';
+    confusionCapacity.option_d = '可以參與，但必須先進位成20kW';
+    confusionCapacity.answer = 'B';
+    confusionCapacity.explanation = '第5版規則是「最低參與容量10kW」與「交易基本單位1kW」並存；17kW已達門檻，可直接以17kW參與，不必湊成10kW倍數。原題的「基本單位10kW」屬舊版敘述；現行條文亦不應再無依據地附加「不得聚合」作為本題結論。';
+    confusionCapacity.source_locator = '114.10第5版第四章第二十四條：交易資源參與容量須達10kW（含）以上；基本單位為kW（1kW）';
+    confusionCapacity.tags = '單元09;易混淆;最低10kW;基本單位1kW;115版本修正;已核對';
+  }
+
+  const confusionSchedule = byId.get('C9-003');
+  if (confusionSchedule) {
+    confusionSchedule.question = '備用容量市場當次媒合起始日後，賣方設定標售資訊、標售資訊審查、買方競價的工作日時段依序為何？';
+    confusionSchedule.option_a = '第1～3個工作日／第4～5個工作日／第6～10個工作日';
+    confusionSchedule.option_b = '第1個工作日／第2～8個工作日／第9～10個工作日';
+    confusionSchedule.option_c = '第1～5個工作日／第6個工作日／第7個工作日';
+    confusionSchedule.option_d = '沒有固定順序';
+    confusionSchedule.answer = 'A';
+    confusionSchedule.explanation = '第5版第二十五條的當次媒合時間表以工作日計：第1～3個工作日設定、第4～5個工作日審查、第6～10個工作日競價。';
+    confusionSchedule.source_locator = '114.10第5版第四章第二十五條：當次交易媒合操作具體時間表（工作日）';
+    confusionSchedule.tags = '單元09;易混淆;媒合時程;工作日;115工作日修正;已核對';
+  }
 })();
