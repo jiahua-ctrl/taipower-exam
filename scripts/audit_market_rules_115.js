@@ -7,6 +7,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const v2 = read('questions_advanced_v2_500.js');
 const v3 = read('questions_advanced_v3_quality_patch.js');
 const v4 = read('questions_advanced_v4_edreg_patch.js');
+const v5 = read('questions_advanced_v5_precision_patch.js');
 const guard = read('question_bank_guard.js');
 const formalSources = [
   'questions_verified_core_v1.js',
@@ -19,6 +20,7 @@ const formalSources = [
   'questions_advanced_v2_500.js',
   'questions_advanced_v3_quality_patch.js',
   'questions_advanced_v4_edreg_patch.js',
+  'questions_advanced_v5_precision_patch.js',
   'question_bank_guard.js'
 ].map(read).join('\n');
 
@@ -32,6 +34,9 @@ const checks = [
   ['V4 E-dReg完整結算含品質指標後再加電能服務費', /const qualityPart = preQuality \* c\.q/.test(v4) && /const total = qualityPart \+ energy/.test(v4)],
   ['V4明確把併網型儲能電能損失費留到月結算另扣', /電能損失費在月結算另計/.test(v4)],
   ['V4含容量結清價0元情境，避免誤認E-dReg容量費固定', /cp:0/.test(v4)],
+  ['V5操作曲線相關中間計算精度=小數點後4位', /小數點後第4位|小數點後4位/.test(v5) && /操作曲線/.test(v5)],
+  ['V5明確區分SBSPM每秒執行率最後四捨五入至整數位', /SBSPM每秒執行率最後仍四捨五入至整數位/.test(v5)],
+  ['V5含新版31.6667%精度案例', /31\.6667%/.test(v5)],
   ['正式題源含109500保證金', /109500|109,500/.test(formalSources)],
   ['正式題源未出現舊sReg現行值59.88', !/59\.88/.test(formalSources)],
   ['115年修正層含新版淨計量公式', /charge\/\(1-loss\)\s*-\s*dis\*\(1-loss\)/.test(guard)],
