@@ -1,4 +1,4 @@
-// 正式模擬考嚴格核對模式：載入高鑑別已核對題、500題V3/V4/V5/V6重整題庫並執行品質守門檢查。
+// 正式模擬考嚴格核對模式：載入高鑑別已核對題、500題V3/V4/V5/V6/V7重整題庫並執行品質守門檢查。
 document.write('<script src="questions_verified_high_discrimination_v1.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v2.js"><\/script>');
 document.write('<script src="questions_verified_high_discrimination_v3.js"><\/script>');
@@ -9,6 +9,7 @@ document.write('<script src="questions_advanced_v3_quality_patch.js"><\/script>'
 document.write('<script src="questions_advanced_v4_edreg_patch.js"><\/script>');
 document.write('<script src="questions_advanced_v5_precision_patch.js"><\/script>');
 document.write('<script src="questions_advanced_v6_sbspm_semantics_patch.js"><\/script>');
+document.write('<script src="questions_advanced_v7_rounding_patch.js"><\/script>');
 document.write('<script src="question_bank_guard.js"><\/script>');
 window.LOCAL_QUESTIONS = typeof window.auditVerifiedQuestionBank === "function"
   ? window.auditVerifiedQuestionBank(window.LOCAL_QUESTIONS)
