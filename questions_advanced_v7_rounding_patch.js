@@ -3,8 +3,7 @@
   const byId = new Map(qs.map(q => [String(q.id || ''), q]));
   const fmt = n => `${Math.round(n).toLocaleString('en-US')}元`;
 
-  // 114.10第5版第四章備用容量市場：
-  // 交易資源參與容量須達10kW（含）以上；交易基本單位為1kW。
+  // 114.10第5版第四章備用容量市場：參與容量須達10kW（含）以上；交易基本單位為1kW。
   const cases = [
     {id:'V2U9-003', kw:11, price:1200000},
     {id:'V2U9-007', kw:17, price:1400000},
@@ -27,6 +26,7 @@
     q.tags = '單元09;計算;備用容量;最低10kW;基本單位1kW;價格換算;115版本修正;已核對';
   });
 
+  // V2保留題：媒合操作時程均以工作日計。
   const v2ScheduleIds = ['V2U9-004','V2U9-008','V2U9-012','V2U9-016','V2U9-020','V2U9-024'];
   v2ScheduleIds.forEach(id => {
     const q = byId.get(id); if (!q) return;
@@ -37,21 +37,61 @@
     q.tags = '單元09;理解;備用容量;交易媒合;工作日;115工作日修正;已核對';
   });
 
-  const v3ScheduleIds = ['V3U9-011','V3U9-012','V3U9-013','V3U9-014','V3U9-015'];
-  v3ScheduleIds.forEach(id => {
-    const q = byId.get(id); if (!q) return;
-    q.topic = '第9單元｜備用容量媒合工作日時程比例';
-    q.question = String(q.question)
-      .replace('媒合前10日流程', '當次媒合10個工作日流程')
-      .replace('賣方設定3日', '賣方設定3個工作日')
-      .replace('審查2日', '審查2個工作日')
-      .replace('買方競價5日', '買方競價5個工作日')
-      .replace('這10日', '這10個工作日');
-    q.explanation = `${q.explanation} 時程單位為工作日：第1～3個工作日設定、第4～5個工作日審查、第6～10個工作日競價。`;
-    q.source_locator = '114.10第5版備用容量交易專區具體時間表：3個工作日設定＋2個工作日審查＋5個工作日競價';
-    q.tags = '單元09;計算;備用容量;交易媒合;時程;工作日;比例;115工作日修正;已核對';
+  // V3U9-011～015 原本五題皆為3+2+5=10的重複比例題，改為第25條五個高鑑別期限。
+  const deadlineCases = [
+    {
+      id:'V3U9-011', topic:'資訊閉鎖期間',
+      question:'依114.10第5版，備用容量市場「資訊閉鎖期間」原則上自何時開始，至何時結束？',
+      correct:'交易媒合期間開始日前10日至交易媒合期間結束',
+      distractors:['交易媒合期間開始前3個工作日至開始日','交易媒合期間結束後10日至30日','只有買方競價的第6～10個工作日'],
+      explanation:'資訊閉鎖期間自交易媒合期間開始日前10日起，持續至交易媒合期間結束；期間原則不得變更已刊登需求或供給資訊，但經電力交易單位個案審查許可者例外。',
+      locator:'114.10第5版第四章第25條第2款：資訊閉鎖期間＝交易媒合期間開始日前10日至交易媒合期間結束'
+    },
+    {
+      id:'V3U9-012', topic:'需求量及供給量公告',
+      question:'依第5版，電力交易單位應於交易媒合期間開始前多久通知備用供電容量需求量及供給量？',
+      correct:'3個工作日',
+      distractors:['3個日曆日','10個工作日','30日'],
+      explanation:'需求量及供給量公告時點為交易媒合期間開始前3個工作日。',
+      locator:'114.10第5版第四章第25條第3款：交易媒合期間開始前3個工作日通知需求量及供給量'
+    },
+    {
+      id:'V3U9-013', topic:'交易媒合結果通知',
+      question:'依第5版，交易媒合期間結束後，電力交易單位最遲應於多久內通知交易媒合結果？',
+      correct:'3個工作日內',
+      distractors:['當日立即','10日內','30日內'],
+      explanation:'交易媒合結果應於交易媒合期間結束後3個工作日內通知。',
+      locator:'114.10第5版第四章第25條第4款：交易媒合期間結束後3個工作日內通知媒合結果'
+    },
+    {
+      id:'V3U9-014', topic:'締約資訊回報',
+      question:'買賣方依媒合結果完成締約後，最遲應於交易媒合期間終止日後多久內向電力交易單位回報締約相關資訊？',
+      correct:'10日內',
+      distractors:['3個工作日內','20日內','30日內'],
+      explanation:'買賣方完成締約後，至遲應於交易媒合期間終止日後10日內回報締約相關資訊。',
+      locator:'114.10第5版第四章第25條第5款：交易媒合期間終止日後10日內回報締約相關資訊'
+    },
+    {
+      id:'V3U9-015', topic:'成交紀錄公布',
+      question:'電力交易單位彙整成交紀錄後，依第5版最遲應於交易媒合期間終止日後多久內公布？',
+      correct:'30日內',
+      distractors:['3個工作日內','10日內','60日內'],
+      explanation:'成交紀錄由電力交易單位於交易媒合期間終止日後30日內彙整公布；不要與買賣方10日內回報締約資訊混淆。',
+      locator:'114.10第5版第四章第25條第5款：交易媒合期間終止日後30日內彙整公布成交紀錄'
+    }
+  ];
+  deadlineCases.forEach(c => {
+    const q = byId.get(c.id); if (!q) return;
+    q.topic = `第9單元｜${c.topic}`;
+    q.level = '3情境';
+    q.question = c.question;
+    q.option_a = c.correct; q.option_b = c.distractors[0]; q.option_c = c.distractors[1]; q.option_d = c.distractors[2]; q.answer = 'A';
+    q.explanation = c.explanation;
+    q.source_locator = c.locator;
+    q.tags = `單元09;易混淆;備用容量;期限;工作日;${c.topic};115期限修正;已核對`;
   });
 
+  // 原300題核心／易混淆題修正為第5版。
   const coreRule = byId.get('V09-001');
   if (coreRule) {
     coreRule.topic = '第9單元｜備用容量參與門檻與基本單位';
@@ -59,8 +99,7 @@
     coreRule.option_a = '參與容量須達10kW（含）以上，交易基本單位為1kW';
     coreRule.option_b = '參與容量須達10kW（含）以上，交易基本單位為10kW';
     coreRule.option_c = '參與容量至少1MW，交易基本單位100kW';
-    coreRule.option_d = '沒有最低參與容量';
-    coreRule.answer = 'A';
+    coreRule.option_d = '沒有最低參與容量'; coreRule.answer = 'A';
     coreRule.explanation = '第5版第二十四條規定：交易資源參與容量須達10kW（含）以上，基本單位為kW（1kW）。因此10kW是最低參與門檻，不是交易粒度。';
     coreRule.source_locator = '114.10第5版第四章第二十四條：參與容量須達10kW（含）以上；基本單位為kW';
     coreRule.tags = '單元09;已核對;最低10kW;基本單位1kW;115版本修正';
@@ -73,8 +112,7 @@
     confusionCapacity.option_a = '不能參與，因為17kW不是10kW的整數倍';
     confusionCapacity.option_b = '可以參與；已達10kW最低門檻，且交易基本單位為1kW';
     confusionCapacity.option_c = '不能參與，因為最低門檻為100kW';
-    confusionCapacity.option_d = '可以參與，但必須先進位成20kW';
-    confusionCapacity.answer = 'B';
+    confusionCapacity.option_d = '可以參與，但必須先進位成20kW'; confusionCapacity.answer = 'B';
     confusionCapacity.explanation = '第5版規則同時規定最低參與容量為10kW、交易基本單位為1kW；17kW已達門檻，因此可直接以17kW參與，不必湊成10kW倍數。';
     confusionCapacity.source_locator = '114.10第5版第四章第二十四條：交易資源參與容量須達10kW（含）以上；基本單位為kW（1kW）';
     confusionCapacity.tags = '單元09;易混淆;最低10kW;基本單位1kW;115版本修正;已核對';
@@ -99,8 +137,7 @@
     hvCapacity.option_a = '可直接以25kW參與；已達10kW最低門檻，且交易基本單位為1kW';
     hvCapacity.option_b = '只能以20kW參與，因為必須向下取10kW倍數';
     hvCapacity.option_c = '必須進位成30kW才能參與';
-    hvCapacity.option_d = '至少要1MW才可參與';
-    hvCapacity.answer = 'A';
+    hvCapacity.option_d = '至少要1MW才可參與'; hvCapacity.answer = 'A';
     hvCapacity.explanation = '第5版第二十四條規定參與容量須達10kW（含）以上，基本單位為1kW；25kW已達門檻，可直接以25kW參與。';
     hvCapacity.source_locator = '114.10第5版第四章第二十四條：參與容量須達10kW（含）以上；基本單位為kW（1kW）';
     hvCapacity.tags = '單元09;已核對;高鑑別;最低10kW;基本單位1kW;115版本修正';
