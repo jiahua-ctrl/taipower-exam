@@ -3,36 +3,36 @@
   const byId = new Map(qs.map(q => [String(q.id || ''), q]));
   const fmt = n => `${Math.round(n).toLocaleString('en-US')}元`;
 
-  // 114.10 第5版附件四／參與費用規則：
-  // 備用容量市場系統使用費為1,000元/MW/年；備用供電容量以MW為最小計費單位，MW以下無條件進位。
-  // 修正V2中5題把0.5MW直接乘1,000元而少計500元的錯誤。
+  // 114.10第5版第四章備用容量市場：
+  // 交易資源參與容量須達10kW（含）以上；交易基本單位為1kW。
+  // 舊版曾使用「基本單位10kW」，因此將正式題庫中仍殘留舊敘述的6題改寫，
+  // 並刻意採11、17、23、31、44、59kW等非10倍數容量，以驗證版本觀念。
   const cases = [
-    {id:'V2U6-006', cap:12.5, apps:1},
-    {id:'V2U6-018', cap:18.5, apps:3},
-    {id:'V2U6-030', cap:24.5, apps:5},
-    {id:'V2U6-042', cap:15.5, apps:2},
-    {id:'V2U6-054', cap:21.5, apps:4}
+    {id:'V2U9-003', kw:11, price:1200000},
+    {id:'V2U9-007', kw:17, price:1400000},
+    {id:'V2U9-011', kw:23, price:1600000},
+    {id:'V2U9-015', kw:31, price:1800000},
+    {id:'V2U9-019', kw:44, price:1300000},
+    {id:'V2U9-023', kw:59, price:1500000}
   ];
 
-  cases.forEach(c => {
+  cases.forEach((c, idx) => {
     const q = byId.get(c.id);
     if (!q) return;
-    const billedMw = Math.ceil(c.cap);
-    const systemFee = billedMw * 1000;
-    const applicationFee = c.apps * 1000;
-    const total = systemFee + applicationFee;
-    const oldWrong = c.cap * 1000 + applicationFee;
+    const total = c.kw / 1000 * c.price;
+    const wrongDown = Math.floor(c.kw / 10) * 10 / 1000 * c.price;
+    const wrongUp = Math.ceil(c.kw / 10) * 10 / 1000 * c.price;
 
-    q.topic = '第6單元｜備用供電容量系統使用費進位';
+    q.topic = '第9單元｜備用容量最低門檻與1kW基本單位';
     q.level = '3情境計算';
-    q.question = `某合格交易者提出備用供電容量${c.cap.toFixed(1)}MW。備用容量市場系統使用費為1,000元/MW/年，且備用供電容量以MW為計費單位、MW以下無條件進位；另有${c.apps}次申請手續費，每次1,000元。兩項合計為何？`;
-    q.option_a = fmt(total);
-    q.option_b = fmt(oldWrong);
-    q.option_c = fmt(systemFee);
-    q.option_d = fmt(applicationFee);
+    q.question = `情境BK-${idx+1}：依114.10第5版，備用容量交易資源參與容量須達10kW（含）以上，交易基本單位為1kW。某資源以${c.kw}kW、成交價格${c.price.toLocaleString('en-US')}元/MW·年交易，其年價金為何？`;
+    q.option_a = `${fmt(total)}/年`;
+    q.option_b = `${fmt(wrongDown)}/年`;
+    q.option_c = `${fmt(wrongUp)}/年`;
+    q.option_d = `${fmt(c.price)}/年`;
     q.answer = 'A';
-    q.explanation = `${c.cap.toFixed(1)}MW須先無條件進位為${billedMw}MW；系統使用費＝${billedMw}×1,000＝${fmt(systemFee)}。申請手續費＝${c.apps}×1,000＝${fmt(applicationFee)}；合計${fmt(total)}。不能直接用${c.cap.toFixed(1)}×1,000計費。`;
-    q.source_locator = '114.10第5版附件四／參與費用：備用容量市場系統使用費1,000元/MW/年；備用供電容量以MW計，MW以下無條件進位；申請手續費1,000元/次';
-    q.tags = '單元06;計算;備用供電容量;系統使用費;申請手續費;無條件進位;115進位修正;已核對';
+    q.explanation = `${c.kw}kW已達10kW最低參與門檻，且基本單位為1kW，因此${c.kw}kW可直接作為交易容量，不須湊成10kW倍數。${c.kw}÷1,000＝${(c.kw/1000).toFixed(3)}MW；再乘${c.price.toLocaleString('en-US')}元/MW·年＝${fmt(total)}/年。`;
+    q.source_locator = '114.10第5版第四章第24條：備用容量交易資源參與容量須達10kW（含）以上；基本單位為kW（1kW）';
+    q.tags = '單元09;計算;備用容量;最低10kW;基本單位1kW;價格換算;115版本修正;已核對';
   });
 })();
