@@ -9,7 +9,9 @@ on:
       - 'config.js'
       - 'unit_filter.js'
       - 'strict_filter.js'
+      - 'RULE_AUDIT_115.md'
       - 'scripts/audit_question_bank_v3.js'
+      - 'scripts/audit_market_rules_115.js'
       - '.github/workflows/audit-question-bank.yml'
   workflow_dispatch:
 
@@ -22,6 +24,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Audit 800-question bank
         run: node scripts/audit_question_bank_v3.js
+      - name: Audit 115 market-rule constants
+        run: node scripts/audit_market_rules_115.js
