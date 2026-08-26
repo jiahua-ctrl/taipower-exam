@@ -47,6 +47,7 @@ const placeholders = audited.filter(q => [q.option_a,q.option_b,q.option_c,q.opt
 const duplicateOptionQuestions = audited.filter(q => new Set([q.option_a,q.option_b,q.option_c,q.option_d].map(String)).size !== 4);
 const badAnswers = audited.filter(q => !['A','B','C','D'].includes(String(q.answer || '').toUpperCase()));
 const expectedAnswerDistribution = {A:200,B:200,C:200,D:200};
+const correctText = q => q?.[`option_${String(q?.answer || '').toLowerCase()}`];
 
 const scanFixIds = ['V3U6-026','V3U6-027','V3U6-028','V3U6-029','V3U6-030'];
 const scanFixes = audited.filter(q => scanFixIds.includes(String(q.id)));
@@ -96,6 +97,19 @@ const sbspmSemanticOk = sbspmSemanticFixes.length === 45
   && audited.filter(q => sbspmMixedIds.includes(String(q.id || ''))).every(q => /範圍內/.test(`${q.question} ${q.explanation} ${q.tags}`) && /SBSPM＝100%|SBSPM=100%/.test(`${q.explanation} ${q.source_locator}`))
   && audited.filter(q => sbspmPowerIds.includes(String(q.id || ''))).every(q => /MW/.test(q.question) && /得標容量百分比/.test(`${q.question} ${q.explanation} ${q.source_locator}`));
 
+const reserveRoundingExpected = {
+  'V2U6-006':'14,000元',
+  'V2U6-018':'22,000元',
+  'V2U6-030':'30,000元',
+  'V2U6-042':'18,000元',
+  'V2U6-054':'26,000元'
+};
+const reserveRounding = audited.filter(q => Object.hasOwn(reserveRoundingExpected, String(q.id || '')));
+const reserveRoundingOk = reserveRounding.length === 5
+  && reserveRounding.every(q => String(q.tags || '').includes('115進位修正'))
+  && reserveRounding.every(q => /MW以下無條件進位/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
+  && reserveRounding.every(q => correctText(q) === reserveRoundingExpected[q.id]);
+
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
   ['進階題=500', advanced.length === 500, advanced.length],
@@ -111,13 +125,14 @@ const checks = [
   ['E-dReg 5題完整結算已納入容量/475效能/品質/電能服務費', edregFullOk, edregFull.map(q=>({id:q.id,question:q.question}))],
   ['dReg 3題已區分操作曲線4位小數與SBSPM整數取位', precisionFixesOk, precisionFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['SBSPM 45題已改為允許範圍/最近邊界語意', sbspmSemanticOk, sbspmSemanticFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
+  ['備用供電容量系統費5題已先整數MW進位再計費', reserveRoundingOk, reserveRounding.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
   ['進階單元分布符合V3', JSON.stringify(byAdvancedUnit) === JSON.stringify({'04':40,'06':90,'07':160,'08':170,'09':40}), byAdvancedUnit]
 ];
 
-console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6 自動稽核 ===');
+console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6＋進位修正 自動稽核 ===');
 for (const [name, ok, detail] of checks) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
 }
