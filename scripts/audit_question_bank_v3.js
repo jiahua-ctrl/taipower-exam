@@ -19,6 +19,7 @@ const files = [
   'questions_advanced_v4_edreg_patch.js',
   'questions_advanced_v5_precision_patch.js',
   'questions_advanced_v6_sbspm_semantics_patch.js',
+  'questions_advanced_v7_rounding_patch.js',
   'question_bank_guard.js'
 ];
 
@@ -110,6 +111,21 @@ const reserveRoundingOk = reserveRounding.length === 5
   && reserveRounding.every(q => /MW以下無條件進位/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
   && reserveRounding.every(q => correctText(q) === reserveRoundingExpected[q.id]);
 
+const backupUnitExpected = {
+  'V2U9-003':'13,200元/年',
+  'V2U9-007':'23,800元/年',
+  'V2U9-011':'36,800元/年',
+  'V2U9-015':'55,800元/年',
+  'V2U9-019':'57,200元/年',
+  'V2U9-023':'88,500元/年'
+};
+const backupUnitFixes = audited.filter(q => Object.hasOwn(backupUnitExpected, String(q.id || '')));
+const backupUnitFixesOk = backupUnitFixes.length === 6
+  && backupUnitFixes.every(q => String(q.tags || '').includes('115版本修正'))
+  && backupUnitFixes.every(q => /10kW（含）以上/.test(q.question) && /基本單位為1kW/.test(q.question))
+  && backupUnitFixes.every(q => /不須湊成10kW倍數/.test(q.explanation))
+  && backupUnitFixes.every(q => correctText(q) === backupUnitExpected[q.id]);
+
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
   ['進階題=500', advanced.length === 500, advanced.length],
@@ -126,13 +142,14 @@ const checks = [
   ['dReg 3題已區分操作曲線4位小數與SBSPM整數取位', precisionFixesOk, precisionFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['SBSPM 45題已改為允許範圍/最近邊界語意', sbspmSemanticOk, sbspmSemanticFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['備用供電容量系統費5題已先整數MW進位再計費', reserveRoundingOk, reserveRounding.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
+  ['備用容量6題已區分最低10kW與基本單位1kW', backupUnitFixesOk, backupUnitFixes.map(q=>({id:q.id,answer:q.answer,correct:correctText(q),question:q.question}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
   ['進階單元分布符合V3', JSON.stringify(byAdvancedUnit) === JSON.stringify({'04':40,'06':90,'07':160,'08':170,'09':40}), byAdvancedUnit]
 ];
 
-console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6＋進位修正 自動稽核 ===');
+console.log('\n=== 台電爸爸版題庫 V3/V4/V5/V6/V7 自動稽核 ===');
 for (const [name, ok, detail] of checks) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
 }
