@@ -12,6 +12,7 @@ on:
       - 'RULE_AUDIT_115.md'
       - 'scripts/audit_question_bank_v3.js'
       - 'scripts/audit_market_rules_115.js'
+      - 'scripts/audit_unit9_deadlines.js'
       - '.github/workflows/audit-question-bank.yml'
   workflow_dispatch:
 
@@ -29,3 +30,5 @@ jobs:
         run: node scripts/audit_question_bank_v3.js
       - name: Audit 115 market-rule constants
         run: node scripts/audit_market_rules_115.js
+      - name: Audit Unit 9 deadlines
+        run: node scripts/audit_unit9_deadlines.js
