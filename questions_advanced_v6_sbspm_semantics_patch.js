@@ -96,4 +96,37 @@
       '功率換算;範圍外;多步驟'
     );
   }
+
+  // V2U6保留下來的5題備用容量市場系統使用費：
+  // 備用供電容量以MW為最小計費單位，MW以下無條件進位，再乘1,000元/MW/年。
+  // 原題將0.5MW直接乘1,000，均少計500元，於此修正。
+  const reserveFeeCases = [
+    {id:'V2U6-006', cap:12.5, apps:1},
+    {id:'V2U6-018', cap:18.5, apps:3},
+    {id:'V2U6-030', cap:24.5, apps:5},
+    {id:'V2U6-042', cap:15.5, apps:2},
+    {id:'V2U6-054', cap:21.5, apps:4}
+  ];
+  reserveFeeCases.forEach(c => {
+    const q = byId.get(c.id);
+    if (!q) return;
+    const billedMw = Math.ceil(c.cap);
+    const systemFee = billedMw * 1000;
+    const applicationFee = c.apps * 1000;
+    const total = systemFee + applicationFee;
+    const oldWrong = c.cap * 1000 + applicationFee;
+    const money = n => `${Math.round(n).toLocaleString('en-US')}元`;
+
+    q.topic = '第6單元｜備用供電容量系統使用費進位';
+    q.level = '3情境計算';
+    q.question = `某合格交易者提出備用供電容量${c.cap.toFixed(1)}MW。備用容量市場系統使用費為1,000元/MW/年，且備用供電容量以MW為計費單位、MW以下無條件進位；另有${c.apps}次申請手續費，每次1,000元。兩項合計為何？`;
+    q.option_a = money(total);
+    q.option_b = money(oldWrong);
+    q.option_c = money(systemFee);
+    q.option_d = money(applicationFee);
+    q.answer = 'A';
+    q.explanation = `${c.cap.toFixed(1)}MW須先無條件進位為${billedMw}MW；系統使用費＝${billedMw}×1,000＝${money(systemFee)}。申請手續費＝${c.apps}×1,000＝${money(applicationFee)}；合計${money(total)}。不能直接用${c.cap.toFixed(1)}×1,000計費。`;
+    q.source_locator = '114.10第5版附件四／參與費用：備用容量市場系統使用費1,000元/MW/年；備用供電容量以MW計，MW以下無條件進位；申請手續費1,000元/次';
+    q.tags = '單元06;計算;備用供電容量;系統使用費;申請手續費;無條件進位;115進位修正;已核對';
+  });
 })();
