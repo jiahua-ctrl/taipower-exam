@@ -38,10 +38,29 @@
       }
     };
 
+    for(let i=0;i<10;i++){
+      const id = `V3U8-${String(71+i).padStart(3,'0')}`;
+      const charge = 1000 + i*200;
+      const dis = 700 + i*120;
+      const loss = 0.02;
+      const net = charge/(1-loss) - dis*(1-loss);
+      const allow = charge/(1-loss)*0.20;
+      const excess = net - allow;
+      fixes[id] = {
+        topic:'第8單元｜電能損失費新版公式',
+        question:`情境${i+71}：月充電${charge}kWh、放電${dis}kWh、線損率2%。依115年現行月結算公式，先求淨計量，再扣除效率額度；超過效率額度的差額約多少kWh？`,
+        correct:`${excess.toFixed(2)}kWh`,
+        distractors:[`${net.toFixed(2)}kWh`,`${allow.toFixed(2)}kWh`,`${(charge-dis).toFixed(2)}kWh`],
+        explanation:`新版淨計量＝${charge}÷0.98−${dis}×0.98＝${net.toFixed(2)}kWh；效率額度＝${charge}÷0.98×20%＝${allow.toFixed(2)}kWh；差額＝${net.toFixed(2)}−${allow.toFixed(2)}＝${excess.toFixed(2)}kWh。`,
+        locator:'公告事項4-4 v07-1：淨計量=總充電÷(1−線損率)−總放電×(1−線損率)；效率額度=總充電÷(1−線損率)×20%',
+        tags:'單元08;計算;電能損失費;效率額度;線損率;重整V3;115修正;已核對'
+      };
+    }
+
     list.forEach(q => {
       const f = fixes[String(q?.id || '')];
       if(!f) return;
-      q.topic = '第6單元｜頻率掃描範圍';
+      q.topic = f.topic || '第6單元｜頻率掃描範圍';
       q.level = '3情境計算';
       q.question = f.question;
       q.option_a = f.correct;
@@ -51,7 +70,7 @@
       q.answer = 'A';
       q.explanation = f.explanation;
       q.source_locator = f.locator;
-      q.tags = '單元06;計算;頻率掃描;範圍;重整V3;115修正;已核對';
+      q.tags = f.tags || '單元06;計算;頻率掃描;範圍;重整V3;115修正;已核對';
     });
   }
 
@@ -128,8 +147,6 @@
       byLevel[level] = (byLevel[level] || 0) + 1;
     }
 
-    // 通過品質檢查後才重新排列選項。800題時可精確平衡為A/B/C/D各200題，
-    // 避免長期刷題產生「猜某一位置」的作答偏誤；正確內容本身不變。
     balanceAnswerPositions(valid);
     valid.forEach(q => { byAnswer[String(q.answer).toUpperCase()]++; });
 
