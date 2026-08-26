@@ -17,6 +17,7 @@ const files = [
   'questions_advanced_v2_500.js',
   'questions_advanced_v3_quality_patch.js',
   'questions_advanced_v4_edreg_patch.js',
+  'questions_advanced_v5_precision_patch.js',
   'question_bank_guard.js'
 ];
 
@@ -72,6 +73,14 @@ const edregFullOk = edregFull.length === 5
   && edregFull.every(q => /4個15分鐘區間/.test(`${q.question} ${q.source_locator}`))
   && edregFull.every(q => /電能損失費/.test(`${q.question} ${q.explanation} ${q.source_locator}`));
 
+const precisionIds = ['V2U7-007','V2U7-014','V2U7-021'];
+const precisionFixes = audited.filter(q => precisionIds.includes(String(q.id || '')));
+const precisionFixesOk = precisionFixes.length === 3
+  && precisionFixes.every(q => String(q.tags || '').includes('115精度修正'))
+  && precisionFixes.every(q => /小數點後4位|小數點後第4位/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
+  && precisionFixes.some(q => /整數位/.test(`${q.question} ${q.explanation} ${q.source_locator}`))
+  && precisionFixes.some(q => /31\.6667%/.test(`${q.question} ${q.explanation} ${q.option_a} ${q.option_b} ${q.option_c} ${q.option_d}`));
+
 const checks = [
   ['正式題庫總數=800', audited.length === 800, audited.length],
   ['進階題=500', advanced.length === 500, advanced.length],
@@ -85,13 +94,14 @@ const checks = [
   ['115年電能損失10題已套用線損率效率額度公式', lossFixesOk, lossFixes.map(q=>({id:q.id,tags:q.tags,explanation:q.explanation}))],
   ['E-dReg 26題已改為15分鐘區間語意', edregIntervalFixesOk, edregIntervalFixes.map(q=>q.id)],
   ['E-dReg 5題完整結算已納入容量/475效能/品質/電能服務費', edregFullOk, edregFull.map(q=>({id:q.id,question:q.question}))],
+  ['dReg 3題已區分操作曲線4位小數與SBSPM整數取位', precisionFixesOk, precisionFixes.map(q=>({id:q.id,question:q.question,tags:q.tags}))],
   ['守門無重複ID', (report.duplicates || []).length === 0, report.duplicates || []],
   ['守門無重複題幹', (report.duplicateQuestions || []).length === 0, report.duplicateQuestions || []],
   ['守門無無效選項', (report.invalidOptions || []).length === 0, report.invalidOptions || []],
   ['進階單元分布符合V3', JSON.stringify(byAdvancedUnit) === JSON.stringify({'04':40,'06':90,'07':160,'08':170,'09':40}), byAdvancedUnit]
 ];
 
-console.log('\n=== 台電爸爸版題庫 V3/V4 自動稽核 ===');
+console.log('\n=== 台電爸爸版題庫 V3/V4/V5 自動稽核 ===');
 for (const [name, ok, detail] of checks) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`, ok ? '' : detail);
 }
