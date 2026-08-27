@@ -15,22 +15,11 @@ from docx.shared import Cm, Pt
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
-DRAFT_DOCX = DIST / "taipower_exam_300q_A4_14pt_draft.docx"
-FINAL_DOCX = DIST / "taipower_exam_300q_A4_14pt.docx"
-TOC_JSON = DIST / "toc_pages_14pt.json"
-
-builder.TARGET_COUNTS = {
-    "01": 20,
-    "02": 25,
-    "03": 25,
-    "04": 24,
-    "05": 35,
-    "06": 35,
-    "07": 40,
-    "08": 40,
-    "09": 35,
-    "10": 21,
-}
+BANK_JSON = DIST / "question_bank_800.json"
+DRAFT_DOCX = DIST / "taipower_exam_800q_A4_14pt_draft.docx"
+FINAL_DOCX = DIST / "taipower_exam_800q_A4_14pt.docx"
+TOC_JSON = DIST / "toc_pages_800_14pt.json"
+EXPECTED_COUNT = 800
 
 
 def set_run_font(run, size=14, bold=None):
@@ -73,7 +62,7 @@ def setup_doc():
 
     footer = sec.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = footer.add_run("台電電力交易平台資格測驗｜300題紙本刷題版　｜　")
+    r = footer.add_run("台電電力交易平台資格測驗｜800題紙本刷題版　｜　")
     set_run_font(r, size=9)
     set_page_number(footer)
     return doc
@@ -98,7 +87,7 @@ def add_para(doc, text="", size=14, bold=False, align=None, before=0, after=0,
 def add_cover(doc):
     add_para(doc, "台電電力交易平台專業人員資格測驗", size=25, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER, before=75, after=14)
-    add_para(doc, "300題紙本刷題版", size=23, bold=True,
+    add_para(doc, "800題紙本刷題版", size=23, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER, after=10)
     add_para(doc, "A4｜正文 14pt｜緊湊考卷排版", size=14,
              align=WD_ALIGN_PARAGRAPH.CENTER, after=26)
@@ -108,14 +97,15 @@ def add_cover(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER, after=32)
     add_para(doc, "使用提醒", size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, after=8)
     reminders = [
+        "本紙本與網站使用同一套800題正式題庫及守門檢查結果。",
         "先完成題目冊，再翻到後半部答案解析對答案。",
         "題目依第1～10單元排列，方便分單元刷題與複習。",
         "規則類內容可能更新，考前仍應以台電公司最新公告版本為準。",
     ]
     for line in reminders:
         add_para(doc, line, size=14, align=WD_ALIGN_PARAGRAPH.CENTER, after=5)
-    add_para(doc, "共 300 題", size=16, bold=True,
-             align=WD_ALIGN_PARAGRAPH.CENTER, before=28, after=0)
+    add_para(doc, "共 800 題", size=16, bold=True,
+             align=WD_ALIGN_PARAGRAPH.CENTER, before=24, after=0)
     doc.add_page_break()
 
 
@@ -168,7 +158,6 @@ def add_question(doc, num, q):
 
     rq = p.add_run(f"{num}. {q['question']}")
     set_run_font(rq, size=14, bold=True)
-
     for letter in "ABCD":
         ro = p.add_run(f"\n\t{letter}. {q[f'option_{letter.lower()}']}")
         set_run_font(ro, size=14, bold=False)
@@ -191,12 +180,48 @@ def add_answer(doc, num, q):
     set_run_font(r3, size=14)
 
 
+def unit_of(q):
+    m = re.search(r"單元(\d{2})", str(q.get("tags", "")))
+    if m:
+        return m.group(1)
+    return builder.unit_of(q)
+
+
+def load_exported_questions():
+    if not BANK_JSON.exists():
+        raise FileNotFoundError(f"找不到正式800題匯出檔：{BANK_JSON}")
+    questions = json.loads(BANK_JSON.read_text(encoding="utf-8"))
+    if not isinstance(questions, list):
+        raise RuntimeError("800題匯出檔格式錯誤：應為陣列")
+    if len(questions) != EXPECTED_COUNT:
+        raise RuntimeError(f"紙本題庫應為{EXPECTED_COUNT}題，實際{len(questions)}題")
+
+    seen = set()
+    for q in questions:
+        qid = str(q.get("id", "")).strip()
+        if not qid or qid in seen:
+            raise RuntimeError(f"題號缺漏或重複：{qid}")
+        seen.add(qid)
+        answer = str(q.get("answer", "")).upper()
+        if answer not in {"A", "B", "C", "D"}:
+            raise RuntimeError(f"答案格式錯誤：{qid}")
+        for key in ["question", "option_a", "option_b", "option_c", "option_d", "explanation", "source_title", "source_locator"]:
+            if not str(q.get(key, "")).strip():
+                raise RuntimeError(f"欄位缺漏：{qid}｜{key}")
+        if unit_of(q) not in builder.UNIT_NAMES:
+            raise RuntimeError(f"無法判定單元：{qid}")
+    return questions
+
+
 def grouped_questions():
-    questions = builder.validate(builder.load_questions())
+    questions = load_exported_questions()
     numbered = [(i + 1, q) for i, q in enumerate(questions)]
     by_unit = defaultdict(list)
     for num, q in numbered:
-        by_unit[builder.unit_of(q)].append((num, q))
+        by_unit[unit_of(q)].append((num, q))
+    missing = [u for u in builder.UNIT_NAMES if not by_unit[u]]
+    if missing:
+        raise RuntimeError(f"下列單元沒有題目：{missing}")
     return questions, by_unit
 
 
@@ -223,7 +248,8 @@ def build_docx(output_path, toc_pages=None):
 
     doc.save(output_path)
     print(f"Created: {output_path}")
-    print("Unit counts:", dict(sorted(Counter(builder.unit_of(q) for q in questions).items())))
+    print("Unit counts:", dict(sorted(Counter(unit_of(q) for q in questions).items())))
+    print("Level counts:", dict(sorted(Counter(str(q.get('level',''))[:1] for q in questions).items())))
 
 
 def canonical(text):
@@ -236,7 +262,6 @@ def extract_toc_pages(pdf_path):
     pdf = fitz.open(pdf_path)
     page_texts = [canonical(page.get_text("text")) for page in pdf]
     result = {"questions": {}, "answers": {}, "page_count": len(pdf)}
-
     for unit in sorted(builder.UNIT_NAMES):
         needle = canonical(f"第 {int(unit)} 單元｜{builder.UNIT_NAMES[unit]}")
         hits = [idx + 1 for idx, text in enumerate(page_texts) if needle in text]
@@ -244,7 +269,6 @@ def extract_toc_pages(pdf_path):
             raise RuntimeError(f"無法在PDF中找到兩次單元標題：{unit}｜hits={hits}")
         result["questions"][unit] = hits[0]
         result["answers"][unit] = hits[1]
-
     return result
 
 
@@ -257,10 +281,11 @@ def verify_pdf(pdf_path, expected):
 
     pdf = fitz.open(pdf_path)
     all_text = "\n".join(page.get_text("text") for page in pdf)
-    q_count = len(re.findall(r"(?m)^\s*\d+\.\s", all_text))
     answer_count = len(re.findall(r"(?m)^\s*\d+\.\s*答案：", all_text))
-    if q_count < 600 or answer_count != 300:
-        raise RuntimeError(f"PDF文字完整性檢查異常：numbered_blocks={q_count}, answers={answer_count}")
+    if answer_count != EXPECTED_COUNT:
+        raise RuntimeError(f"PDF答案區完整性檢查異常：answers={answer_count}")
+    if "800題紙本刷題版" not in canonical(all_text):
+        raise RuntimeError("PDF封面未顯示800題紙本刷題版")
 
     print(f"Verified final PDF: {pdf_path}")
     print(f"Pages: {len(pdf)}")
