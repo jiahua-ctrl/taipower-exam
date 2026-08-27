@@ -215,9 +215,10 @@ def load_exported_questions():
 
 def grouped_questions():
     questions = load_exported_questions()
-    numbered = [(i + 1, q) for i, q in enumerate(questions)]
+    # 網站題庫依載入檔案順序排列；紙本改以單元排序後重新編號，確保1～800連續。
+    ordered = sorted(enumerate(questions), key=lambda item: (int(unit_of(item[1])), item[0]))
     by_unit = defaultdict(list)
-    for num, q in numbered:
+    for num, (_, q) in enumerate(ordered, start=1):
         by_unit[unit_of(q)].append((num, q))
     missing = [u for u in builder.UNIT_NAMES if not by_unit[u]]
     if missing:
