@@ -1,0 +1,28 @@
+name: Export Print Question Bank
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/export_print_bank.js'
+      - '.github/workflows/export-print-bank.yml'
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Export verified 800-question bank
+        run: node scripts/export_print_bank.js
+      - name: Upload print bank artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: print-question-bank-800
+          path: print_question_bank_800.json
+          if-no-files-found: error
